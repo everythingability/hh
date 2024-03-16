@@ -24,7 +24,10 @@ This feature is provided by the medical information being authored in a tool cal
 
 This project is made by Tom Smith, and was inspired by working with Yomi Sanusi and will be based on information from The World Health Organization (WHO) and more importantly, the work of the National Institute for Health and Care Excellence (NICE) https://www.nice.org.uk/guidance/NG136 
 
+Yomi informs me that thousands more Africans die every year from hypertension, in way Europeans or Americans don't, simply from lack of information and guidance about high blood pressure, and he thought if this app was made then it might help to saving those peoples lives.
+
+
 At present, the "intelligent medical information" part works as proof of concept, but hasn't been fulling implemented yet.
 
-This is a work in progress at the moment.
+This is a work in progress at the moment. I have no idea if I have the skills to make this work.
 
