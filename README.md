@@ -22,7 +22,7 @@ This feature is provided by the medical information being authored in a tool cal
 
 ## Installing The App Yourself
 
-The [Hypertension Helper](https://static.everythingability.opalstacked.com/hh/) app is available here. Remember, any data you add is only stored in that browser window. It is saved if you close the window, but won't be available on another device. No data is stored or saved online.
+The [Hypertension Helper](https://everythingability.github.io/hh/) app is available here. Remember, any data you add is only stored in that browser window. It is saved if you close the window, but won't be available on another device. No data is stored or saved online.
 
 
 
