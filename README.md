@@ -1,7 +1,7 @@
 ![](images/icons-vector.svg)
 
 # Hypertension Helper
-![](images/screenshot1.png)
+<center><img src="images/screenshot1.png" width="100"></center>
 
 This Progressive Web App (PWA) is meant to be a tool with which you can record, your personal details and also multiple blood pressure readings in a diary.
 
@@ -18,6 +18,12 @@ This medical information is presented differently to the user based on their per
 #### How This App Works
 
 This feature is provided by the medical information being authored in a tool called Twine, which the app passes personal data to via the URL's search args and they become twine variables.
+
+## Installing The App Yourself
+
+The [Hypertension Helper](https://static.everythingability.opalstacked.com/hh/) app is available here. Remember, any data you add is only stored in that browser window. It is saved if you close the window, but won't be available on another device. No data is stored or saved online.
+
+
 
 
 ## About This Project
