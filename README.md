@@ -9,6 +9,8 @@ The idea is that a person might install the app, record their blood pressure ove
 
 It is designed to NOT rely on the internet (except for installation, and emailing the doctor your data of course), and stores all of its data in LocalStorage. 
 
+It is designed, I hope, to be usable on really old smart phones, and to allow for multiple people to be able to keep their data on this same phone, each person having a separate profile (these aren't passworded or anything, you choose your profile from a dropdown).
+
 ## Intelligent Medical Information?
 
 This medical information is presented differently to the user based on their personal health information and latest blood pressure reading. So for example, if a person's weight, ethnicity or age suggests some treatment, then that information will be promoted or highlighted to the user.
