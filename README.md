@@ -1,4 +1,7 @@
+![](images/icons-vector.svg)
+
 # Hypertension Helper
+![](images/screenshot1.png)
 
 This Progressive Web App (PWA) is meant to be a tool with which you can record, your personal details and also multiple blood pressure readings in a diary.
 
