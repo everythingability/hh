@@ -1,0 +1,113 @@
+
+/* Custom, iPhone Retina */ 
+@media only screen and (min-width : 320px) {
+
+      body{
+        /* background: rgb(249, 98, 123); */
+        font-size: 1.0rem;
+        }
+}
+
+@media screen and (min-width: 480px) and (max-width: 767px) and (orientation: portrait) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+}
+  
+/* Extra Small Devices, Phones */ 
+@media only screen and (min-width : 480px) {
+ 
+    body{
+      /* background: rgb(244, 173, 9); */
+      font-size: 1.1rem;
+    }
+    
+}
+
+/* Small Devices, Tablets: My Android phone */
+@media only screen and (min-width : 768px) {
+
+  body{
+      /* background: yellow ; */
+      font-size: 1.2rem;;
+  }
+}
+
+/* Medium Devices, Desktops: My laptop*/
+@media only screen and (min-width : 992px) {
+
+  body{
+    /* background: lime; */
+    font-size: 1.3rem;;
+  }
+  
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+
+  body{
+    /* background: cyan; */
+    font-size: 1.4rem;
+    }
+}
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1800px) {
+ 
+  body{
+    /* background: rgb(119, 94, 164); */
+    font-size: 1.4rem;
+    }
+}
+
+#navbarSupportedContent{
+  padding:0px;
+}
+
+.navbar option{
+ height: 0.7rem!important;
+}
+.navbar select{
+  height: 1.4em;
+}
+.navbar{
+  padding: 0px 0px!important;
+}
+
+.container-fluid{
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+select{
+  padding-top:4px;
+  margin-top:14px;
+  margin-right: 5px;
+}
+
+#saveProfileBtn{
+  margin-right: 5px;
+}
+
+#profileSelect {
+  font-weight: bold;
+}
+
+main{
+  padding:20px;
+}
+.form-helper{
+  font-style: italic;
+  font-size: .8em;
+  margin-bottom:40px;
+}
+

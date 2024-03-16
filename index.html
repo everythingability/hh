@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hypertension Helper: Blood Pressure Diary App</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="shortcut icon" href="images/icons-vector.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Javascript -->
+  <script src="libs/jquery-3.5.1.slim.min.js" ></script>
+  <script src="libs/popper.min.js" ></script>
+  <script src="libs/bootstrap.bundle.min.js"  ></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="libs/bootstrap.min.css">
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+  <div class="container-fluid">
+  
+    <nav class="navbar navbar-expand-lg navbar-light"  role="navigation" style="background:#e6e9eb!important;">
+
+      <h2 class="mb-2"> <a class="nav-link" href="index.html">Hypertension Helper </a>  </h2>  
+      <h2 class="mb-2"> <a class="nav-link" href="#" id="twineLink">Information</a></h2>
+    
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end " id="navbarSupportedContent">
+
+          <div class="form-group align-bottom" id="profileSelectDiv" >
+            <select class="custom-select align-bottom font-weight-bold" id="profileSelect" 
+            style="width:340px; font-size: 1.4em; padding-top:1px;padding-bottom:1px;">
+              <!-- Options will be dynamically added here -->
+            </select>
+          </div>
+  
+          <button class="btn btn-primary align-text-bottom " id="editProfileButton">Edit Profile</button> &nbsp;
+          <button id="createProfileBtn" class="btn btn-secondary  align-text-bottom">Create New Profile</button>       
+
+      </div>
+    </nav>
+  
+    <main>
+ 
+    <!-- Profile Form -->
+    <div id="profileForm" style="display: none;">
+      <!-- Profile form fields will be dynamically generated here --> 
+    </div>
+
+
+
+
+    <!-- Blood Pressure Diary Form -->
+    <br>
+    <form id="bpForm" style="display: none;">
+      <h2 class="mb-2">Add A Blood Pressure Reading</h2>
+
+      <div class="row p-2" >
+
+          <div class="col ">
+            <div class="input-group  " >
+              <input type="number"    class="form-control form-control-lg  w-25" id="systolic" min="1" maxlength="3" required >
+              <div class="input-group-append">
+                <span class="input-group-text" >Systolic</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col ">
+            <div class="input-group  " >
+              <input type="number"    class="form-control form-control-lg  w-25" id="diastolic" min="1" maxlength="3" required >
+              <div class="input-group-append">
+                <span class="input-group-text " >Diastolic</span>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- END ROW-->
+
+        <div class="row p-2" >
+
+          <div class="col">
+            <div class="input-group"  >
+              <input type="number"  class="form-control form-control-lg    w-50" id="weight" min="1" step="any" required placeholder="Weight in kg">
+              <div class="input-group-append">
+                <span class="input-group-text" >Weight in kgs</span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col">
+            <!-- empty-->
+          </div>
+        
+      </div>
+
+       <div class="row p-2" >
+
+          <div class="col ">
+              <button type="submit"  class="btn btn-primary  form-control-lg  align-self-top" style="margin-top:0px;">Add Entry</button>
+          </div>
+
+      </div><!-- end row -->
+ 
+      <br><br>
+    </form>
+     <!-- END Blood Pressure Diary Form -->
+
+
+
+    <!-- Blood Pressure Entries Table -->
+    <div id="entriesTable" style="display: none;">
+
+      <h2>Blood Pressure Readings</h2>
+
+      <div class="table-responsive">
+       
+      <table class="table table-bordered table-striped text-center">
+        
+        <thead class="thead-dark">
+          <tr >
+            <th >Datetime </th>
+            <th>Systolic <br>(mmHg)</th>
+            <th>Diastolic <br>(mmHg)</th>
+            <th>Weight <br>(kg)</th>
+            <th ><!-- Button to Download CSV -->
+              <div class="mx-auto">
+                <span id="downloadCSVBtn" class="btn btn-success mt-3 text-center" style="display: inline-block;">Download</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody id="entriesBody" >
+          <!-- Blood pressure entries will be dynamically added here -->
+        </tbody>
+      </table>
+      </div>
+       <!-- END Blood Pressure Entries Table -->
+
+    </div>
+
+    
+  </div>
+
+  <br><br>
+
+
+
+</main>
+
+
+<footer class="footer mt-auto py-3">
+  <div class="container">
+    <span class="text-muted"><hr/></span>
+  </div>
+</footer>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>

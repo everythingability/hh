@@ -1,0 +1,49 @@
+{
+  "short_name": "HypertensionHelper",
+  "name": "Hypertension Helper: A Blood Pressure Diary",
+  "description": "Blood Pressure Diary",
+  "id": "index.html", 
+  "start_url": "index.html",
+  "background_color": "#ffffff",
+  "display": "minimal-ui",
+  "orientation": "landscape",
+  "scope": "/hh/",
+  "theme_color": "#3367D6",
+
+  "shortcuts": [
+  ],
+ 
+  "icons": [
+    {
+      "src": "images/icons-vector.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    },
+    {
+      "src": "images/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "images/icons-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+
+  "screenshots": [
+    {
+      "src": "images/screenshot1.png",
+      "type": "image/png",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "images/screenshot2.png",
+      "type": "image/png",
+      "sizes": "720x540",
+      "form_factor": "wide"
+    }
+  ]
+  
+}

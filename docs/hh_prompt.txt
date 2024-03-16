@@ -1,0 +1,29 @@
+Can you create a one page html page app that lets a user record their profile details and maintain a blood pressure diary.
+The app should use localStorage to store data. 
+The app should use bootstrap for styling.
+The app should not require any external (e.g on the internet resources) so that it can work without having an internet connection.
+The app should be able to accommodate numerous users, as this app might be distributed as a single html file and used on a mobile.
+On load, there should be a dropdown to select which profile is "active", and a button to create a new profile.
+The profile should have the ability to save, full name, email, birth date, ethnicity (from a list of sub saharan ethnicities (Akan, Amhara, Ashanti, Bantu, Berber, Dinka, Hausa, Igbo, Kikuyu, Oromo, Shona, Swahili, Wolof, Yoruba, Zulu) but including others such as caucasion, indian etc)
+In the profile one should be able to save your name, email, height in cm, weight in kg, and also add a list of medications.
+Can there be a checkbox in the profile so that user can say whether they are diabetic or not, and an "About your health" textarea where a user can add some free text about themselves.
+Can there also be a non required profile field for their telephone number.
+In the blood pressure diary one should be able to save diassolic, systolic, weight in kg, and timestamp.
+Can the weight in kg field in the diary entry autopopulate from the last entered value in their profile. Can this weight field also update the profile weight field.
+Can the systolic and diastolic form items only accept up to 3 numbers e.g 1, to 999
+The user should have to complete their profile data before they can add blood pressure diary entries.
+The user should be able to edit all data items.
+In the localStorage the entries for each profile should be kept separate and displayed in the app relative to the selected profile.
+On entering blood pressure data, the form should clear itself.
+When a profile is selected it should show the profile form, and all the form items should be editable. Can the key name to diary entries be an arbitrary generated id so that people can change all these items without breaking their data. When a profile is "selected", the button to save the profile should update the currently selected profile record in the localStorage, not create a new one with same details etc.
+Can there be a button to download all the profile information and diary entries as CSV. 
+There should be a button to create a new profile.
+The dropdown to select a profile should not be shown if there are no profiles stored in localStorage. Only the create New Profile should be shown.
+When a profile is created or a profile is selected, the information for that profile should be displayed in the profile form.
+Can the profile form be visally collapsible so the user can focus on their diary form and entries.
+Can there be a chart below the diary entries which displays their blood pressure values over time.
+When a profile is created, can that profile be "selected", the form and entries displayed.
+Can you generate the full html and javascript for the app described.
+
+
+

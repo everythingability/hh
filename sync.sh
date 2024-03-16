@@ -1,0 +1,1 @@
+rsync -av  /Library/WebServer/Documents/hh/ tomsmith@opal11.opalstack.com:/home/tomsmith/apps/static/hh/
