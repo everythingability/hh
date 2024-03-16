@@ -33,13 +33,13 @@
 
   "screenshots": [
     {
-      "src": "images/screenshot1.png",
+      "src": "images/screenshot-1.png",
       "type": "image/png",
       "sizes": "540x720",
       "form_factor": "narrow"
     },
     {
-      "src": "images/screenshot2.png",
+      "src": "images/screenshot-2.png",
       "type": "image/png",
       "sizes": "720x540",
       "form_factor": "wide"
