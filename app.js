@@ -22,7 +22,7 @@ function getCookie(name) {
 }
 
 
-////////////////////////   ON LOAD ////////////////////////////
+///////////////////////////////////////   ON LOAD ////////////////////////////////////////////
 
 document.addEventListener("DOMContentLoaded", function () {
     const profileSelect = document.getElementById("profileSelect");
@@ -35,7 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
-///////////////////////////// END ON LOAD ///////////////////////////
+
+////////////////////////////////////// END ON LOAD //////////////////////////////////////////////
 
 
 const getProfile = function (profileId) {
@@ -110,22 +111,20 @@ function loadProfileData(profileId) {
   
     
   `;
-        //editProfile('${profileId}')  editProfileButton
+        profileForm.style.display = "none"; // Ensure profile form is not displayed
+        
         let editProfileBtn = document.getElementById('editProfileButton');
         editProfileBtn.setAttribute('onclick', `editProfile('${profileId}'); `);
 
-
-        profileForm.style.display = "none"; // Ensure profile form is displayed
-
-        //Select the dropdown
+        //Select the relevant dropdown
         let element = document.getElementById('profileSelect');
         console.log(`profileId: ${profileId}`)
         element.value = profileId;
 
-        bpForm.style.display = "block";
-        entriesTable.style.display = "block";
+        bpForm.style.display = "block"; //show the blood pressure form
+        entriesTable.style.display = "block";//show the entries table
 
-        downloadCSVBtn.style.display = "block";
+        //downloadCSVBtn.style.display = "block";
         displayEntries(profileId);
 
 
@@ -135,7 +134,7 @@ function loadProfileData(profileId) {
 
         //Set the cookie so when you return you return to the same profile if you pop into the information
         document.cookie = "profileId=" + profile.id;
-        document.getElementById("weight").value = profile.weight
+        document.getElementById("weight").value = profile.weight ; // in the form to the last weight entered
     }
 }
 /////////////////////////////// LOAD A PROFILE /////////////////////////////////
@@ -145,30 +144,105 @@ function showProfileForm(){
     profileForm.style.display = "block";
     bpForm.style.display = "none";
     entriesTable.style.display = "none";
-    downloadCSVBtn.style.display = "none";
+    //downloadCSVBtn.style.display = "none";
 
     profileForm.innerHTML = "<h2>Create New Profile</h2>";
-    profileForm.innerHTML += `
-  <!-- Profile form fields will be dynamically generated here -->
-`;
+    profileForm.innerHTML += ``;
+
+    //Build Ethnicities Dropdown select
+    var ethnicitiesDropdown = ''
+    ethnicities.forEach( function(ethnicity){
+        ethnicitiesDropdown += `<option name="${ethnicity}" value="${ethnicity}" >${ethnicity}</option>`  
+    });
+    console.log(ethnicitiesDropdown)
+    //End Ethnicities Dropdown
+
     const profileFields = [
         { label: '', id: 'id', type: 'hidden', value: generateUniqueId() },
         { label: 'Full Name:', id: 'fullName', type: 'text', value: "" },
         { label: 'Email:', id: 'email', type: 'email', value: "" },
         { label: 'Telephone:', id: 'telephone', type: 'tel', value: "" },
         { label: 'Birth Date:', id: 'birthDate', type: 'date', value: "" },
-        { label: 'Ethnicity:', id: 'ethnicity', type: 'text', value: "" },
+        { label: 'Ethnicity:', id: 'ethnicity', type: 'select', value: ethnicitiesDropdown },
         { label: 'Height (cm):', id: 'height', type: 'number', value: "" },
         { label: 'Weight (kg):', id: 'weight', type: 'number', value: "" },
         { label: 'Medications:', id: 'medications', type: 'textarea', value: "" },
-        { label: 'Do you have type 2 diabetes?:', id: 'isDiabetic', type: 'checkbox', value: "" },
+        { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', value: "" },
         { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: "" },
     ];
 
-    profileFields.forEach(field => {
+    // Build Create Profile Form...
 
-        const inputField = field.type === 'textarea' ? `<textarea class="form-control" id="${field.id}"></textarea>` :
-            `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}">`;
+        profileFields.forEach(field => {
+
+            // create the input
+                /*const inputField = field.type === 'textarea' ?
+                 `<textarea class="form-control" id="${field.id}">${field.value}</textarea>` :
+                `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`;*/
+    
+            var inputField = ''
+            switch(field.type) {
+    
+                case "hidden":
+                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}><div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+    
+                case "text":
+                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+    
+                case "checkbox":
+                    inputField += `<input type="${field.type}" class="form-control d-inline-flex w-25" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+    
+                case "textarea":
+                    inputField += `<textarea rows="10" class="form-control" id="${field.id}">${field.value}</textarea>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+    
+                case "number":
+                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+    
+                case "email":
+                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+    
+                case "date":
+                        inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+                        <div class="form-helper helper">${field.helper || ""}</div>`
+        
+                        break;
+    
+                case "tel":
+                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" >
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+
+                case "select":
+                    inputField += `<select class="form-control" id="${field.id}" >${field.value}</select>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
+
+    
+                default:
+                    
+                    inputField += `<input type="text" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`
+                    
+                }     
+
         const formGroup = document.createElement("div");
         formGroup.classList.add("form-group");
         formGroup.innerHTML = `<label for="${field.id}">${field.label}</label>${inputField}`;
@@ -197,40 +271,67 @@ function showProfileForm(){
 createProfileBtn.addEventListener("click", function () {
     showProfileForm()
 });
-//////////////////////////////// END CREATE NEW PROFILE FORM EVENT ////////////////////////////////
 
-///////////////////// CREATE EDIT PROFILE FORM ///////////////////////////////
+
+//////////////////////////////// END CREATE NEW PROFILE FORM EVENT ////////////////////////////////
+var ethnicities =[
+    "Afro-Latino",
+    "African-Caribbean",
+    "Black African",
+    "Asian (including East Asian, South Asian, Southeast Asian)",
+    "Hispanic/Latinx",
+    "Indigenous Australian",
+    "Maori (New Zealand)",
+    "Mediterranean",
+    "Middle Eastern/North African",
+    "Mixed Race/Multiracial",
+    "Native American/Indigenous",
+    "Pacific Islander",
+    "Slavic/Eastern European",
+    "White European/Caucasian",
+]
+/////////////////////  EDIT PROFILE FORM ///////////////////////////////
 window.editProfile = function (profileId) {
     const profile = JSON.parse(localStorage.getItem(profileId));
-    profileForm.innerHTML = ''//"<h2>Edit Profile</h2>";
+    profileForm.innerHTML = "<h2>Edit Profile</h2>";
     profileForm.innerHTML += `<!-- Profile form fields will be dynamically generated here -->`;
     console.log('editProfle: ' + profile.id)
     if (profile.id == "") profile.id = generateUniqueId()
 
-        const profileFields = [
-            { label: '', id: 'id', type: 'hidden', value: profile.id },
-            { label: 'Full Name:', id: 'fullName', type: 'text', value: profile.fullName },
-            { label: 'Email:', id: 'email', type: 'email', value: profile.email, helper: "This isn't shared ever, but is included in your spreadsheet data that you can download." },
-            { label: 'Telephone:', id: 'telephone', type: 'tel', value: profile.telephone, helper: "This isn't shared ever, but is included in your spreadsheet data that you can download." },
-            { label: 'Birth Date:', id: 'birthDate', type: 'date', value: profile.birthDate,helper: "This is used to calculate your BMI and used to help make the Information section more useful" },
-            { label: 'Ethnicity:', id: 'ethnicity', type: 'text', value: profile.ethnicity, helper: "This is used to tailor the Information section too" },
-            { label: 'Height (cm):', id: 'height', type: 'number', value: profile.height, helper: "Used to calculate BMI" },
-            { label: 'Weight (kg):', id: 'weight', type: 'number', value: profile.weight, helper: "Used to calculate BMI" },
-            { label: 'Medications:', id: 'medications', type: 'textarea', value: profile.medications },
-            { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', checked: profile.isDiabetic },
-            { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: profile.healthInfo },
+    //Build Ethnicities Dropdown select
+    var ethnicitiesDropdown = ''
+    ethnicities.forEach( function(ethnicity){
+        console.log( profile.ethnicity, ethnicity)
+        var selected= ''
+        if (profile.ethnicity == ethnicity){
+            selected = ' selected '
+        }
+        ethnicitiesDropdown += `<option name="${ethnicity}" value="${ethnicity}" ${selected}>${ethnicity}</option>`
+
+    });
+    console.log(ethnicitiesDropdown)
+    //End Ethnicities Dropdown
+
+    const profileFields = [
+        { label: '', id: 'id', type: 'hidden', value: profile.id },
+        { label: 'Full Name:', id: 'fullName', type: 'text', value: profile.fullName },
+        { label: 'Email:', id: 'email', type: 'email', value: profile.email, helper: "This isn't shared ever, but is included in your spreadsheet data that you can download." },
+        { label: 'Telephone:', id: 'telephone', type: 'tel', value: profile.telephone, helper: "This isn't shared ever, but is included in your spreadsheet data that you can download." },
+        { label: 'Birth Date:', id: 'birthDate', type: 'date', value: profile.birthDate,helper: "This is used to calculate your BMI and used to help make the Information section more useful" },
+        { label: 'Ethnicity:', id: 'ethnicity', type: 'select', value: ethnicitiesDropdown, helper: "This is used to tailor the Information section too" },
+        { label: 'Height (cm):', id: 'height', type: 'number', value: profile.height, helper: "Used to calculate BMI" },
+        { label: 'Weight (kg):', id: 'weight', type: 'number', value: profile.weight, helper: "Used to calculate BMI" },
+        { label: 'Medications:', id: 'medications', type: 'textarea', value: profile.medications },
+        { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', checked: profile.isDiabetic },
+        { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: profile.healthInfo },
 
     ];
 
     profileFields.forEach(field => {
 
-        // create the input
-            /*const inputField = field.type === 'textarea' ?
-             `<textarea class="form-control" id="${field.id}">${field.value}</textarea>` :
-            `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`;*/
-
         var inputField = ''
         switch(field.type) {
+
             case "hidden":
                 inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}><div class="form-helper helper">${field.helper || ""}</div>`
 
@@ -277,6 +378,12 @@ window.editProfile = function (profileId) {
                 <div class="form-helper helper">${field.helper || ""}</div>`
 
                 break;
+
+            case "select":
+                    inputField += `<select class="form-control" id="${field.id}" >${field.value}</select>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+    
+                    break;
 
             default:
                 
@@ -339,33 +446,10 @@ function saveProfile(event) {
     const fullName = document.getElementById("fullName").value;
     const email = document.getElementById("email").value;
     const birthDate = document.getElementById("birthDate").value;
-    const ethnicity = document.getElementById("ethnicity").value;
-    /*
-    <div class="form-group">
-        <label for="ethnicity">Ethnicity:</label>
-        <select class="form-control" id="ethnicity" required>
-          <option value="">Select Ethnicity</option>
-          <option value="akan">Akan</option>
-          <option value="amhara">Amhara</option>
-          <option value="ashanti">Ashanti</option>
-          <option value="bantu">Bantu</option>
-          <option value="berber">Berber</option>
-          <option value="dinka">Dinka</option>
-          <option value="hausa">Hausa</option>
-          <option value="igbo">Igbo</option>
-          <option value="kikuyu">Kikuyu</option>
-          <option value="oromo">Oromo</option>
-          <option value="shona">Shona</option>
-          <option value="swahili">Swahili</option>
-          <option value="wolof">Wolof</option>
-          <option value="yoruba">Yoruba</option>
-          <option value="zulu">Zulu</option>
-          <option value="caucasian">Caucasian</option>
-          <option value="indian">Indian</option>
-          <!-- Add more options as needed -->
-        </select>
-      </div>
-      */
+
+    const ethnicityElement = document.getElementById("ethnicity");
+    var ethnicity = ethnicityElement.options[ethnicityElement.selectedIndex].text;
+    console.log(`ethnicity: ${ethnicity}`)
 
     const height = document.getElementById("height").value;
     const weight = document.getElementById("weight").value;
@@ -406,9 +490,14 @@ function displayEntries(profileId) {
     const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
 
     entries.forEach(entry => {
+        //tidy up the timestamp
+        var timestamp = entry.timestamp.replace(",", "<br>")
+        timestamp = timestamp.substring(0, timestamp.length-3);//chop last :34 secs off.
+         //tidy up the timestamp
+
         const row = document.createElement("tr");
         row.innerHTML = `
-        <td>${entry.timestamp}</td>
+        <td>${timestamp}</td>
         <td>${entry.systolic}</td>
         <td>${entry.diastolic}</td>
         <td>${entry.weight}</td>
@@ -432,12 +521,12 @@ bpForm.addEventListener("submit", function (event) {
     const weight = document.getElementById("weight").value;
 
     //update profile to most recent weight
-    var profile = getProfile(profileId)//update profile
+    var profile = getProfile(profileId) //update profile
     profile.weight = weight
     localStorage.setItem(profileId, JSON.stringify(profile));
 
     //create a new diary entry
-    const timestamp = new Date().toLocaleString();
+    const timestamp = new Date().toLocaleString({dateStyle:"short", timeStyle:"short"});
     const id = generateUniqueId();
     const entry = { id, systolic, diastolic, weight, timestamp };
     const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
