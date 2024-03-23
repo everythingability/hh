@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hypertension Helper: Blood Pressure Diary App</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <link rel="shortcut icon" href="../images/icons-vector.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Javascript -->
+
+  <script src="../libs/jquery-3.1.1.min.js"></script>
+  <script src="../libs/popper.min.js" ></script>
+  <script src="../libs/bootstrap.bundle.min.js"  ></script>
+  <script src="../libs/marked.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../libs/bootstrap.min.css">
+  <link rel="stylesheet" href="../styles.css">
+
+<style>
+  nav button{
+    margin: 5px;
+    background:transparent;
+    padding: left 1px;
+    padding-right:10px;
+    text-align: center;
+    font-size:0.9em;
+    float:left ;
+    display: inline; 
+    border: 0px;
+    height: 56px;
+  }
+ 
+</style>
+
+</head>
+
+<body>
+
+  <div class="container-fluid">
+  
+    <nav class="navbar navbar-expand-lg navbar-light p-2"  role="navigation" style="background:#e6e9eb!important;">
+
+      <h2 class="mb-2"> <a class="nav-link" href="../index.html">Hypertension Helper </a>  </h2>  
+      <h2 class="mb-2"> <a class="nav-link" href="javascript:loadPage('Home.md')" id="twineLink">Information</a></h2>
+    
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"   aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+     <h3 class="mb-2 justify-content-end" style="width:30%;text-align:right;padding-right:8px;"><div id="name"></div></h3> 
+
+      <div class="nav collapse navbar-collapse justify-content-end " id="navbarSupportedContent">
+
+          <button class="nav-item"><span  id="age"></span> years</button>
+          <button class="nav-item" ><b>Is diabetic? </b><br><span id="isDiabetic"></span></button>
+          <button class="nav-item" ><b>Avg bp</b><br> <span id="averageBloodPressure"></span></button>
+          <button class="nav-item" ><b>BMI</b> 
+            <span id="bmi"></span>
+            <br>
+            <span  id="weight"></span>kg (<i><span  id="category"></span></i>)
+          </button>
+
+          <button class="nav-item" ><b>Ethnicity</b><br><span id="ethnicity"></span></button>
+
+      </div>
+    </nav>
+  
+    <main id="content">
+ 
+  
+
+
+
+    </main>
+
+
+<footer class="footer mt-auto py-3">
+  <div class="container">
+    <span class="text-muted"><hr/></span>
+  </div>
+</footer>
+
+<script src="information.js"></script>
+
+
+</body>
+</html>

@@ -1,5 +1,8 @@
 
 var twineLink = "" //gets populated with search args to pump Twine project
+var averageSystolic
+var averageDiastolic 
+var averageMsg
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
@@ -141,6 +144,10 @@ function loadProfileData(profileId) {
 
 //////////////////////////////// CREATE NEW EMPTY PROFILE FORM EVENT ////////////////////////////////
 function showProfileForm(){
+    hhNav.style.display = "none"
+    informationNav.style.display = "none"
+    editProfileButton.style.display = "none"
+
     profileForm.style.display = "block";
     bpForm.style.display = "none";
     entriesTable.style.display = "none";
@@ -292,6 +299,10 @@ var ethnicities =[
 ]
 /////////////////////  EDIT PROFILE FORM ///////////////////////////////
 window.editProfile = function (profileId) {
+    hhNav.style.display = "none"
+    informationNav.style.display = "none"
+    editProfileButton.style.display = "none"
+
     const profile = JSON.parse(localStorage.getItem(profileId));
     profileForm.innerHTML = "<h2>Edit Profile</h2>";
     profileForm.innerHTML += `<!-- Profile form fields will be dynamically generated here -->`;
@@ -440,6 +451,9 @@ function hideEntries(){
 
 //////////////////////////////// SAVE PROFILE //////////////////////////////////////////////////
 function saveProfile(event) {
+    hhNav.style.display = "block"
+    informationNav.style.display = "block"
+    editProfileButton.style.display = "block"
 
     event.preventDefault();
     const id = document.getElementById("id").value;
@@ -489,22 +503,41 @@ function displayEntries(profileId) {
     entriesBody.innerHTML = '';
     const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
 
-    entries.forEach(entry => {
-        //tidy up the timestamp
-        var timestamp = entry.timestamp.replace(",", "<br>")
-        timestamp = timestamp.substring(0, timestamp.length-3);//chop last :34 secs off.
-         //tidy up the timestamp
+    var count = 0
+    var systolicSum = 0
+    var diastolicSum = 0
+    console.log( "num of entries: " , entries.length)
+    if (entries.length > 1){
+        entries.forEach(entry => {
+            //tidy up the timestamp
+            var timestamp = entry.timestamp.replace(",", "<br>")
+            timestamp = timestamp.substring(0, timestamp.length-3);//chop last :34 secs off.
+            //tidy up the timestamp
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
-        <td>${timestamp}</td>
-        <td>${entry.systolic}</td>
-        <td>${entry.diastolic}</td>
-        <td>${entry.weight}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${profileId}', '${entry.id}')">Delete</button></td>
-      `;
-        entriesBody.appendChild(row);
-    });
+            const row = document.createElement("tr");
+            systolicSum += Number(entry.systolic)
+            diastolicSum += Number(entry.diastolic)
+            count ++
+
+            row.innerHTML = `
+            <td>${timestamp}</td>
+            <td>${entry.systolic}</td>
+            <td>${entry.diastolic}</td>
+            <td>${entry.weight}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteEntry('${profileId}', '${entry.id}')">Delete</button></td>
+        `;
+            entriesBody.appendChild(row);
+        });
+   
+
+        //Add average to table
+        averageSystolic = Math.round( systolicSum/count)
+        averageDiastolic = Math.round( diastolicSum/count)
+        console.log("Average:", averageSystolic, "/", averageDiastolic)
+        averageMsg = averageSystolic + "/" + averageDiastolic
+        document.getElementById("average").innerHTML = "Your average reading is: " +  averageMsg
+   }
+
 
 
 }
@@ -634,20 +667,34 @@ function makeTwineLink(profile) {
 
     //Make the link
     var query = '?'
+    query += "id=" + profile.id + "&"
     query += "ethnicity=" + encodeURIComponent(profile.ethnicity) + "&"
+    query += "age=" + encodeURIComponent(age) + "&"
     query += "bmi=" + encodeURIComponent(bmi) + "&"
     query += "medications=" + encodeURIComponent(profile.medications) + "&"
     query += "name=" + encodeURIComponent(profile.fullName) + "&"
     query += "diabetic=" + encodeURIComponent(profile.isDiabetic) + "&"
     query += "weight=" + encodeURIComponent(profile.weight) + "&"
-    query += "systolic=" + encodeURIComponent(entry.systolic) + "&"
-    query += "diastolic=" + encodeURIComponent(entry.diastolic) + "&"
-    query += "category=" + encodeURIComponent(category) + "&"
-    query += "age=" + encodeURIComponent(age) + "&"
-    query += "random=" + Math.random()
+
+    if (entry){
+
+        query += "systolic=" + encodeURIComponent(entry.systolic) + "&"
+        query += "diastolic=" + encodeURIComponent(entry.diastolic) + "&"
+        query += "category=" + encodeURIComponent(category) + "&"
+
+        query += "averageSystolic=" + averageSystolic + "&"
+        query += "averageDiastolic=" + averageDiastolic + "&"
+        query += "random=" + Math.random() + "&"
+        console.log("They need to add a blood pressure reading")
+        
+    }else{
+        query += "msg=" + encodeURIComponent("You need to add your first reading.") + "&"
+    }
+   
+   
     //
 
-    twineLink = 'twine/Information.html' + query
+    twineLink = 'information/Information.html' + query
     link = document.getElementById('twineLink')
     link.setAttribute("href", twineLink);
     console.log("twineLink:" + twineLink)

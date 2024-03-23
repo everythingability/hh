@@ -4,7 +4,7 @@
 
       body{
         /* background: rgb(249, 98, 123); */
-        font-size: 1.0rem;
+        font-size: 1.8rem;
         }
 }
 
@@ -19,24 +19,20 @@
     top: 100%;
     left: 0;
   }
+  body{
+    /* background: rgb(249, 98, 123); */
+    font-size: 1.6rem;
+    }
+
 }
   
-/* Extra Small Devices, Phones */ 
-@media only screen and (min-width : 480px) {
- 
-    body{
-      /* background: rgb(244, 173, 9); */
-      font-size: 1.1rem;
-    }
-    
-}
 
 /* Small Devices, Tablets: My Android phone */
 @media only screen and (min-width : 768px) {
 
   body{
       /* background: yellow ; */
-      font-size: 1.2rem;;
+      font-size: 1.4rem;;
   }
 }
 
@@ -45,7 +41,7 @@
 
   body{
     /* background: lime; */
-    font-size: 1.3rem;;
+    font-size: 1.2rem;;
   }
   
 }
@@ -55,7 +51,7 @@
 
   body{
     /* background: cyan; */
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     }
 }
 /* Large Devices, Wide Screens */
@@ -63,7 +59,7 @@
  
   body{
     /* background: rgb(119, 94, 164); */
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     }
 }
 
