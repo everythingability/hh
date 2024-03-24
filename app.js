@@ -37,6 +37,10 @@ document.addEventListener("DOMContentLoaded", function () {
         loadProfileData(this.value);
     });
 
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+
 });
 
 ////////////////////////////////////// END ON LOAD //////////////////////////////////////////////
@@ -295,7 +299,7 @@ var ethnicities =[
     "Native American/Indigenous",
     "Pacific Islander",
     "Slavic/Eastern European",
-    "White European/Caucasian",
+    "White/Caucasian",
 ]
 /////////////////////  EDIT PROFILE FORM ///////////////////////////////
 window.editProfile = function (profileId) {

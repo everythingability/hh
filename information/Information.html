@@ -25,12 +25,11 @@
   nav button{
     margin: 5px;
     background:transparent;
-    padding: left 1px;
+    padding: left 4px;
     padding-right:10px;
     text-align: center;
     font-size:0.9em;
-    float:left ;
-    display: inline; 
+
     border: 0px;
     height: 56px;
   }
@@ -52,11 +51,11 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-     <h3 class="mb-2 justify-content-end" style="width:30%;text-align:right;padding-right:8px;"><div id="name"></div></h3> 
-
       <div class="nav collapse navbar-collapse justify-content-end " id="navbarSupportedContent">
 
-          <button class="nav-item"><span  id="age"></span> years</button>
+        <h3 class="mb-2 justify-content-end" style="width:30%;text-align:right;padding-right:8px;"><div id="name"></div></h3> 
+
+          <button class="nav-item"><span  id="age"></span> <br>years old</button>
           <button class="nav-item" ><b>Is diabetic? </b><br><span id="isDiabetic"></span></button>
           <button class="nav-item" ><b>Avg bp</b><br> <span id="averageBloodPressure"></span></button>
           <button class="nav-item" ><b>BMI</b> 
@@ -79,9 +78,12 @@
     </main>
 
 
-<footer class="footer mt-auto py-3">
-  <div class="container">
-    <span class="text-muted"><hr/></span>
+<footer class="footer mt-auto">
+  <div class="stickycontainer">
+    <span class="text-muted">
+      <a href="javascript:loadPage('About.md')">About</a> | 
+       <a href="javascript:loadPage('Glossary and Terms.md')">Glossary</a>
+    </span>
   </div>
 </footer>
 

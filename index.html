@@ -45,7 +45,7 @@
 
   
           <button class="btn btn-primary align-text-bottom " id="editProfileButton">Edit Profile</button> &nbsp;
-          <button id="createProfileBtn" class="btn btn-secondary  align-text-bottom" style="margin-right:4px;">Create New Profile</button>       
+          <button id="createProfileBtn" class="btn btn-secondary  align-text-bottom " data-toggle="tooltip" data-placement="top" title="Create new profile for someone new" style="margin-right:4px;"> +</button>       
 
       </div>
     </nav>
@@ -63,7 +63,7 @@
 
     <!-- Blood Pressure Diary Form -->
     <br>
-    <form id="bpForm" style="display: none;">
+    <form id="bpForm" style="display: none;margin-top:10px;">
       <h2 class="mb-2">Add A Blood Pressure Reading</h2>
 
       <div class="row p-2" >
@@ -122,7 +122,7 @@
 
 
     <!-- Blood Pressure Entries Table -->
-    <div id="entriesTable" style="display: none;">
+    <div id="entriesTable" style="display: none;margin-top:40px;">
 
       <h2>Blood Pressure Readings</h2>
       <span id="average"> </span>
@@ -168,11 +168,13 @@
 
 
 
-<footer class="footer mt-auto py-3">
-  <div class="container">
-    <span class="text-muted"><hr/></span>
-  </div>
-</footer>
+  <footer class="footer mt-auto">
+    <div class="container">
+      <span class="text-muted">
+      
+      </span>
+    </div>
+  </footer>
 
 
 <script src="app.js"></script>
