@@ -1,8 +1,9 @@
 
-var twineLink = "" //gets populated with search args to pump Twine project
-var averageSystolic
-var averageDiastolic 
+var id, bmi, name, category, isDiabetic, weight, height, systolic, diastolic
+var averageSystolic, averageDiastolic, age, ethnicity
 var averageMsg
+var x = 100 //just for demo purposes
+var homepage = 'Home.md' //where you want to start from
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
@@ -72,8 +73,6 @@ function loadAllProfiles() {
         var profileId = getCookie('profileId')
 
         // if cookie is null show create profile
-
-
         console.log(`Selected profileId is: ${profileId}`)
         if (profileId) {
             loadProfileData(profileId); // Load profile data for the selected profile
@@ -102,22 +101,7 @@ function loadProfileData(profileId) {
     console.log(profile)
 
     if (profile) {
-        profileForm.innerHTML = `
-    <h2 class="mb-3">Profile Details</h2>
-
-    <strong>Full Name:</strong> ${profile.fullName}<br>
-    <strong>Email:</strong> ${profile.email}<br>
-    <strong>Telephone:</strong> ${profile.telephone || 'Not provided'}<br>
-    <strong>Birth Date:</strong> ${profile.birthDate}<br>
-    <strong>Ethnicity:</strong> ${profile.ethnicity}<br>
-    <strong>Height (cm):</strong> ${profile.height}<br>
-    <strong>Weight (kg):</strong> ${profile.weight}<br>
-    <strong>Medications:</strong> ${profile.medications}<br>
-    <strong>Do you have Type 2 Diabetes:</strong> ${profile.isDiabetic ? 'Yes' : 'No'}<br>
-    <strong>About Your Health:</strong> ${profile.healthInfo}<br><br>
-  
-    
-  `;
+        profileForm.innerHTML = ``;
         profileForm.style.display = "none"; // Ensure profile form is not displayed
         
         let editProfileBtn = document.getElementById('editProfileButton');
@@ -134,7 +118,36 @@ function loadProfileData(profileId) {
         //downloadCSVBtn.style.display = "block";
         displayEntries(profileId);
 
+        //Calculate personal details
+        if (profile.isDiabetic == false){
+            isDiabetic = "No"
+        }else{
+            isDiabetic = "Yes"
+        }
+        bmi = profile.weight / ((profile.height / 100) ** 2);
+        bmi = bmi.toFixed(2)
+        category = ''
+        if (bmi < 18.5) {
+            category = "Underweight";
+        } else if (bmi < 25) {
+            category = "Normal weight";
+        } else if (bmi < 30) {
+            category = "Overweight";
+        } else {
+            category = "Obese";
+        }
+    
+        age = calculateAge(profile.birthDate)
 
+        document.getElementById("name").innerHTML = profile.fullName
+        document.getElementById("bmi").innerHTML = bmi
+        document.getElementById("weight").innerHTML = profile.weight
+        document.getElementById("category").innerHTML = category
+        document.getElementById("age").innerHTML = age
+        document.getElementById("isDiabetic").innerHTML = isDiabetic
+        document.getElementById("ethnicity").innerHTML = profile.ethnicity
+        document.getElementById("averageBloodPressure").innerHTML = averageSystolic+"/"+averageDiastolic
+    
         //fixup Twine link //     
         makeTwineLink(profile)
 
@@ -577,7 +590,11 @@ bpForm.addEventListener("submit", function (event) {
 });
 //////////////////////////// END ADD ENTRY //////////////////////////////////////////////////////
 
-
+function hideHH(){
+  
+    hideBPForm()
+    hideEntries()
+}
 
 
 
@@ -641,6 +658,7 @@ downloadCSVBtn.addEventListener("click", function () {
 //////////////////// UTILITIES /////////////////////////////////////////////////////
 
 function makeTwineLink(profile) {
+    /*
     //Calculate BMI
     let bmi = profile.weight / ((profile.height / 100) ** 2);
     bmi = bmi.toFixed(2)
@@ -702,7 +720,7 @@ function makeTwineLink(profile) {
     link = document.getElementById('twineLink')
     link.setAttribute("href", twineLink);
     console.log("twineLink:" + twineLink)
-
+    */
 }
 
 function calculateAge(birthDate) {
@@ -716,3 +734,70 @@ function calculateAge(birthDate) {
 function generateUniqueId() {
     return Math.random().toString(36).substr(2, 9);
 }
+
+//////////////////////// INFORMATION //////////////////////////
+
+window.onhashchange = function() { //When someone clicks the back/forward buttons.
+    var hash = window.location.hash.replace("#", "")
+    if ( hash != '' ){
+        //console.log("hash:", hash)
+        loadPage(hash)
+    }else{
+        //console.log(window.location)
+        loadPage(homepage)
+    }
+
+  }   
+
+//handles links like this <a href="javascript:loadPage('MyMarkdownFile.md')">
+function loadPage(markdownFileName) {
+    hideHH()
+    console.log("loadPage:", markdownFileName)
+    $.get("information/" + markdownFileName, function (data) {
+        html = myParse(data, markdownFileName)
+        $('#content').html(html);
+    }, 'text');
+
+    document.title = decodeURIComponent(markdownFileName.replace(".md", ""))//Set the browser's title to the name of the file.
+    window.location.hash = `${markdownFileName}`; //append the pages' url with #MyMarkDownFile.md
+    
+}
+
+/* Turns markdown links and images into HTML links and images*/
+function fixLinks(markdownContent) {
+    var regex = /(\!\[([^\[\]]+)\]\(([^\)]+)\))|(\[([^\[\]]+)\]\(([^\)]+)\))/g; //find markdown images and links.
+
+    let match;
+    while ((match = regex.exec(markdownContent)) !== null) {
+        if (match[1]) {
+            var text = match[2];
+            var link = match[3];
+            /*console.log("Type: Image", text, link);*/
+            markdownContent = markdownContent.replace(`![${text}](${link})`, `<img src="${link}" alt="${text}">`)
+
+        } else {
+            var text = match[5];
+            var link = match[6];
+            /*console.log("Type: Link", text, link);*/
+            if (link.startsWith("http")){
+                markdownContent = markdownContent.replace(`[${text}](${link})`, `<a href="${link}" target="_blank">${text}</a>`)
+            }else{
+                link = link.replace("../", '') //fix "backup relative links"
+                markdownContent = markdownContent.replace(`[${text}](${link})`, `<a href="javascript:loadPage('${link}')">${text}</a>`)
+            }
+        }
+    }
+
+    return markdownContent
+}
+
+
+function myParse(data) {
+    // maybe get any meta data from the page at this point or do some other wizardry?
+    data = fixLinks(data)          
+    var html = marked.parse(data) // Use the marked.js lib to turn markdown into HTML
+    return html
+}
+
+
+//////////////// get vars from url ////////////////////

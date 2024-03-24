@@ -14,6 +14,7 @@
   <script src="libs/jquery-3.1.1.min.js"></script>
   <script src="libs/popper.min.js" ></script>
   <script src="libs/bootstrap.bundle.min.js"  ></script>
+  <script src="libs/marked.min.js"></script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="libs/bootstrap.min.css">
@@ -28,7 +29,7 @@
     <nav class="navbar navbar-expand-lg navbar-light p-2"  role="navigation" style="background:#e6e9eb!important;">
 
       <h2 class="mb-2" id="hhNav"> <a class="nav-link" href="index.html">Hypertension Helper </a>  </h2>  
-      <h2 class="mb-2" id="informationNav"> <a class="nav-link" href="#" id="twineLink">Information</a></h2>
+      <h2 class="mb-2" id="informationNav"> <a class="nav-link" href="javascript:loadPage('Home.md')" id="twineLink">Information</a></h2>
     
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -49,14 +50,56 @@
 
       </div>
     </nav>
+
+    <div  id="personalDetails" style="width:100%;background:yellow;">
+
+      <ul class="nav justify-content-center nav-fill ">
+
+        <li class="nav-item">
+         <span  id="name"></span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:loadPage('Age and Hypertension.md')"><span  id="age"></span> <br>years old</a>
+        </li>
+        <li class="nav-item">
+          
+          <a class="nav-link" href="javascript:loadPage('Diabetes and Hypertension.md')"><b>Is diabetic? </b><br><span id="isDiabetic"></span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="#" tabindex="-1" ><b>Avg bp</b><br> <span id="averageBloodPressure"></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:loadPage('Weight and Hypertension.md')">
+          <b>BMI</b> 
+          <span id="bmi"></span>
+          <br>
+          <span  id="weight"></span>kg (<i><span  id="category"></span></i>)</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="javascript:loadPage('Ethnicity and Hypertension.md')" tabindex="-1" ><b>Ethnicity</b><br><span id="ethnicity"></span></a></li>
+
+      </ul>
+
+
+    </div>
   
     <main>
+
+
  
     <!-- Profile Form -->
     <div id="profileForm" style="display: none;">
       <!-- Profile form fields will be dynamically generated here --> 
     </div>
      <!-- End profile Form -->
+
+
+
+     
+    <div id="content">
+ 
+
+    </div>
 
 
 
@@ -169,7 +212,7 @@
 
 
   <footer class="footer mt-auto">
-    <div class="container">
+    <div class="stickycontainer">
       <span class="text-muted">
       
       </span>
@@ -178,6 +221,7 @@
 
 
 <script src="app.js"></script>
+
 
 </body>
 </html>
