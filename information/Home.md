@@ -1,4 +1,4 @@
-# Information
+# <img src="images/info.svg" width="32"> Information
 
 
 This guideline covers identifying and treating primary hypertension (high blood pressure) in people aged 18 and over, including people with type 2 diabetes. 
