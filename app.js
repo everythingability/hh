@@ -212,8 +212,17 @@ function showProfileForm(){
     entriesTable.style.display = "none";
     //downloadCSVBtn.style.display = "none";
 
-    profileForm.innerHTML = "<h2>Create New Profile</h2>";
-    profileForm.innerHTML += ``;
+    profileForm.innerHTML = '<h2><img src="images/fingerprint.svg">Create New Profile</h2>';
+    profileForm.innerHTML += `
+    <p>
+    All profile data is stored in this browser only. None is shared anywhere. All the information
+    is asked to help tailor the information to you.
+    </p>
+    <p>
+    When you have added some blood pressure readings, you can download them to send to your doctor.
+    </p>
+    
+    `;
 
     //Build Ethnicities Dropdown select
     var ethnicitiesDropdown = ''
@@ -225,17 +234,17 @@ function showProfileForm(){
 
     const profileFields = [
         { label: '', id: 'id', type: 'hidden', value: generateUniqueId() },
-        { label: 'Full Name:', id: 'fullName', type: 'text', value: "" },
-        { label: 'Email:', id: 'email', type: 'email', value: "" },
-        { label: 'Telephone:', id: 'telephone', type: 'tel', value: "" },
-        { label: 'Birth Date:', id: 'birthDate', type: 'date', value: "" },
-        { label: 'Ethnicity:', id: 'ethnicity', type: 'select', value: ethnicitiesDropdown },
-        { label: 'Height (cm):', id: 'height', type: 'number', value: "" },
-        { label: 'Weight (kg):', id: 'weight', type: 'number', value: "" },
-        { label: 'Medications:', id: 'medications', type: 'textarea', value: "" },
-        { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', value: "" },
-        { label: 'Do you smoke?', id: 'isSmoker', type: 'checkbox', value: "" },
-        { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: "" },
+        { label: 'Full Name:', id: 'fullName', type: 'text', value: "" , helper:""},
+        { label: 'Email:', id: 'email', type: 'email', value: "" , helper:"This isn't shared with anyone"},
+        { label: 'Telephone:', id: 'telephone', type: 'tel', value: "" , helper:""},
+        { label: 'Birth Date:', id: 'birthDate', type: 'date', value: "" , helper:""},
+        { label: 'Ethnicity:', id: 'ethnicity', type: 'select', value: ethnicitiesDropdown , helper:""},
+        { label: 'Height (cm):', id: 'height', type: 'number', value: "", helper:"" },
+        { label: 'Weight (kg):', id: 'weight', type: 'number', value: "", helper:"" },
+        { label: 'Medications:', id: 'medications', type: 'textarea', value: "", helper:"" },
+        { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', value: "", helper:"" },
+        { label: 'Do you smoke?', id: 'isSmoker', type: 'checkbox', value: "" , helper:""},
+        { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: "", helper:"" },
     ];
 
     // Build Create Profile Form...
@@ -367,7 +376,7 @@ window.editProfile = function (profileId) {
 
 
     const profile = JSON.parse(localStorage.getItem(profileId));
-    profileForm.innerHTML = "<h2>Edit Profile</h2>";
+    profileForm.innerHTML = `<h2><img src="images/fingerprint.svg" width="38px"> Edit Profile</h2>`;
     profileForm.innerHTML += `<!-- Profile form fields will be dynamically generated here -->`;
     console.log('editProfle: ' + profile.id)
     if (profile.id == "") profile.id = generateUniqueId()
