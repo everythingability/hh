@@ -1,9 +1,7 @@
-
-var id, bmi, name, category, isDiabetic, weight, height, systolic, diastolic
-var averageSystolic, averageDiastolic, age, ethnicity
-var averageMsg
 var x = 100 //just for demo purposes
-var homepage = 'Home.md' //where you want to start from
+var id, bmi, name, category, isDiabetic, weight, height, systolic, diastolic
+var averageSystolic, averageDiastolic, age, ethnicity, averageMsg
+var homepage = 'Home.md' //where you want to start Information pages from
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
@@ -87,7 +85,7 @@ function loadAllProfiles() {
     } else {
         console.log("There are no profiles")
         //Show the createProfile form
-        showProfileForm() /// THERE ISN'T ONE SO MAKE ONE!!!! 
+        showProfileForm() /// THERE ISN'T ANY PROFILES SO MAKE ONE!!!! 
         profileSelectDiv.style.display = "none";
     }
 
@@ -136,20 +134,18 @@ function loadProfileData(profileId) {
         } else {
             category = "Obese";
         }
-    
+        entry = getLastEntry(profileId)
         age = calculateAge(profile.birthDate)
 
         document.getElementById("name").innerHTML = profile.fullName
         document.getElementById("bmi").innerHTML = bmi
         document.getElementById("weight").innerHTML = profile.weight
+        document.getElementById("weightDisplay").innerHTML = profile.weight//in the header
         document.getElementById("category").innerHTML = category
         document.getElementById("age").innerHTML = age
         document.getElementById("isDiabetic").innerHTML = isDiabetic
         document.getElementById("ethnicity").innerHTML = profile.ethnicity
         document.getElementById("averageBloodPressure").innerHTML = averageSystolic+"/"+averageDiastolic
-    
-        //fixup Twine link //     
-        makeTwineLink(profile)
 
 
         //Set the cookie so when you return you return to the same profile if you pop into the information
@@ -446,8 +442,8 @@ window.editProfile = function (profileId) {
     cancelProfileBtn.addEventListener("click", cancelProfile);
     profileForm.appendChild(cancelProfileBtn);
 
-    hideBPForm()
-    hideEntries()
+    hideHH()
+
     
 }
 
@@ -461,6 +457,11 @@ function hideEntries(){
     console.log('hiding blood pressure entries table')
     const entriesTable = document.getElementById("entriesTable");
     entriesTable.style.display = "none";
+}
+
+function hideHH(){ 
+    hideBPForm()
+    hideEntries()
 }
 
 ///////////////////// END CREATE EDIT PROFILE FORM ///////////////////////////////
@@ -506,7 +507,7 @@ function saveProfile(event) {
     loadProfileData(id); // Automatically select and load the newly created profile
     //alert("Profile saved successfully!");
 
-    makeTwineLink(getProfile(id))
+  
     document.getElementById("weight").value = profile.weight
 }
 /////////////////////////// END SAVE PROFILE ////////////////////////////////////
@@ -552,7 +553,7 @@ function displayEntries(profileId) {
         averageDiastolic = Math.round( diastolicSum/count)
         console.log("Average:", averageSystolic, "/", averageDiastolic)
         averageMsg = averageSystolic + "/" + averageDiastolic
-        document.getElementById("average").innerHTML = "Your average reading is: " +  averageMsg
+        //document.getElementById("average").innerHTML = "Your average reading is: " +  averageMsg
    }
 
 
@@ -569,6 +570,7 @@ bpForm.addEventListener("submit", function (event) {
     const systolic = document.getElementById("systolic").value;
     const diastolic = document.getElementById("diastolic").value;
     const weight = document.getElementById("weight").value;
+    const notes = document.getElementById("notes").value;
 
     //update profile to most recent weight
     var profile = getProfile(profileId) //update profile
@@ -578,7 +580,7 @@ bpForm.addEventListener("submit", function (event) {
     //create a new diary entry
     const timestamp = new Date().toLocaleString({dateStyle:"short", timeStyle:"short"});
     const id = generateUniqueId();
-    const entry = { id, systolic, diastolic, weight, timestamp };
+    const entry = { id, systolic, diastolic, weight, timestamp, notes };
     const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
     entries.push(entry);
     localStorage.setItem(profileId + "_entries", JSON.stringify(entries));
@@ -590,11 +592,7 @@ bpForm.addEventListener("submit", function (event) {
 });
 //////////////////////////// END ADD ENTRY //////////////////////////////////////////////////////
 
-function hideHH(){
-  
-    hideBPForm()
-    hideEntries()
-}
+
 
 
 
@@ -606,8 +604,6 @@ function getLastEntry(profileId) {
     return entries.pop()
 }
 //////////////////////// END GET LAST ENTRY IN THE BLOOD PRESSURE DIARY ///////////////////////
-
-
 
 
 
@@ -623,105 +619,11 @@ function cancelProfile(event) {
     loadAllProfiles();
 }
 
-///////////////// Download profile information and blood pressure entries as CSV ///////////////////////
-downloadCSVBtn.addEventListener("click", function () {
-    const profileId = profileSelect.value;
-    const profiles = JSON.parse(localStorage.getItem("profiles")) || [];
-    const profile = profiles.find(p => p.id === profileId);
-    const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
-
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Profile Information\n";
-    csvContent += "Full Name,Email,Birth Date,Ethnicity,Height (cm),Weight (kg),Medications,Diabetic,About Your Health,Telephone\n";
-    csvContent += `${profile.fullName},${profile.email},${profile.birthDate},${profile.ethnicity},${profile.height},${profile.weight},"${profile.medications}",${profile.isDiabetic ? 'Yes' : 'No'},"${profile.healthInfo}",${profile.telephone || 'Not provided'}\n\n`;
-    csvContent += "Blood Pressure Entries\n";
-    csvContent += "Timestamp,Systolic,Diastolic,Weight (kg)\n";
-    entries.forEach(entry => {
-        csvContent += `${entry.timestamp},${entry.systolic},${entry.diastolic},${entry.weight}\n`;
-    });
-
-    const encodedURI = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedURI);
-    link.setAttribute("download", `${profile.fullName}_data.csv`);
-    document.body.appendChild(link);
-    link.click();
-});
-///////////////// END Download profile information and blood pressure entries as CSV ///////////////////////
 
 
 
 
-
-
-
-//////////////////// UTILITIES /////////////////////////////////////////////////////
-
-function makeTwineLink(profile) {
-    /*
-    //Calculate BMI
-    let bmi = profile.weight / ((profile.height / 100) ** 2);
-    bmi = bmi.toFixed(2)
-    var category = ''
-    if (bmi < 18.5) {
-        category = "Underweight";
-    } else if (bmi < 25) {
-        category = "Normal weight";
-    } else if (bmi < 30) {
-        category = "Overweight";
-    } else {
-        category = "Obese";
-    }
-
-    var age = calculateAge(profile.birthDate)
-
-    // DO WEIGHT
-    try {
-        let weightInput = document.getElementById('weight');
-        weightInput.value = profile.weight
-    } catch (e) {
-        console.log("no weight")
-    }
-
-
-    let entry = getLastEntry(profile.id)
-    console.log("lastEntry:", entry)
-
-    //Make the link
-    var query = '?'
-    query += "id=" + profile.id + "&"
-    query += "ethnicity=" + encodeURIComponent(profile.ethnicity) + "&"
-    query += "age=" + encodeURIComponent(age) + "&"
-    query += "bmi=" + encodeURIComponent(bmi) + "&"
-    query += "medications=" + encodeURIComponent(profile.medications) + "&"
-    query += "name=" + encodeURIComponent(profile.fullName) + "&"
-    query += "diabetic=" + encodeURIComponent(profile.isDiabetic) + "&"
-    query += "weight=" + encodeURIComponent(profile.weight) + "&"
-
-    if (entry){
-
-        query += "systolic=" + encodeURIComponent(entry.systolic) + "&"
-        query += "diastolic=" + encodeURIComponent(entry.diastolic) + "&"
-        query += "category=" + encodeURIComponent(category) + "&"
-
-        query += "averageSystolic=" + averageSystolic + "&"
-        query += "averageDiastolic=" + averageDiastolic + "&"
-        query += "random=" + Math.random() + "&"
-        console.log("They need to add a blood pressure reading")
-        
-    }else{
-        query += "msg=" + encodeURIComponent("You need to add your first reading.") + "&"
-    }
-   
-   
-    //
-
-    twineLink = 'information/Information.html' + query
-    link = document.getElementById('twineLink')
-    link.setAttribute("href", twineLink);
-    console.log("twineLink:" + twineLink)
-    */
-}
+////////////////////////////////// UTILITIES /////////////////////////////////////////////////////
 
 function calculateAge(birthDate) {
     var diff_ms = Date.now() - new Date(birthDate)
@@ -734,8 +636,12 @@ function calculateAge(birthDate) {
 function generateUniqueId() {
     return Math.random().toString(36).substr(2, 9);
 }
+////////////////////////////////// END UTILITIES /////////////////////////////////////////////////////
 
-//////////////////////// INFORMATION //////////////////////////
+
+
+
+//////////////////////// MARKDOWN INFORMATION PAGES ////////////////////////////
 
 window.onhashchange = function() { //When someone clicks the back/forward buttons.
     var hash = window.location.hash.replace("#", "")
@@ -800,4 +706,31 @@ function myParse(data) {
 }
 
 
-//////////////// get vars from url ////////////////////
+//////////////////////// END MARKDOWN INFORMATION PAGES ////////////////////////////
+
+
+///////////////// Download profile information and blood pressure entries as CSV ///////////////////////
+downloadCSVBtn.addEventListener("click", function () {
+    const profileId = profileSelect.value;
+    const profiles = JSON.parse(localStorage.getItem("profiles")) || [];
+    const profile = profiles.find(p => p.id === profileId);
+    const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Profile Information\n";
+    csvContent += "Full Name,Email,Birth Date,Ethnicity,Height (cm),Weight (kg),Medications,Diabetic,About Your Health,Telephone\n";
+    csvContent += `${profile.fullName},${profile.email},${profile.birthDate},${profile.ethnicity},${profile.height},${profile.weight},"${profile.medications}",${profile.isDiabetic ? 'Yes' : 'No'},"${profile.healthInfo}",${profile.telephone || 'Not provided'}\n\n`;
+    csvContent += "Blood Pressure Entries\n";
+    csvContent += "Timestamp,Systolic,Diastolic,Weight (kg)\n";
+    entries.forEach(entry => {
+        csvContent += `${entry.timestamp},${entry.systolic},${entry.diastolic},${entry.weight}\n`;
+    });
+
+    const encodedURI = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedURI);
+    link.setAttribute("download", `${profile.fullName}_data.csv`);
+    document.body.appendChild(link);
+    link.click();
+});
+///////////////// END Download profile information and blood pressure entries as CSV ///////////////////////
