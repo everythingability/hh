@@ -1,5 +1,5 @@
 var x = 100 //just for demo purposes
-var id, bmi, name, category, isDiabetic, weight, height, systolic, diastolic
+var id, bmi, name, category, isDiabetic, isSmoker, weight, height, systolic, diastolic
 var averageSystolic, averageDiastolic, age, ethnicity, averageMsg
 var bloodPressureStatus = ''
 
@@ -112,9 +112,7 @@ function loadProfileData(profileId) {
         //Select the relevant dropdown
         let element = document.getElementById('profileSelect');
         console.log(`profileId: ${profileId}`)
-        element.value = profileId;
-
-       
+        element.value = profileId;   
 
         //downloadCSVBtn.style.display = "block";
         displayEntries(profileId);
@@ -184,7 +182,7 @@ NOT IN CLINIC
         document.getElementById("age").innerHTML = age
         document.getElementById("isDiabetic").innerHTML = isDiabetic
         document.getElementById("ethnicity").innerHTML = ethnicity
-        document.getElementById("averageBloodPressure").innerHTML = averageSystolic+"/"+averageDiastolic + "<br>" + bloodPressureStatus 
+        document.getElementById("averageBloodPressure").innerHTML = averageSystolic+"/"+averageDiastolic + "(" + bloodPressureStatus + ")"
 
         //show releveant sections of the screen
         bpForm.style.display = "block"; //show the blood pressure form
@@ -236,6 +234,7 @@ function showProfileForm(){
         { label: 'Weight (kg):', id: 'weight', type: 'number', value: "" },
         { label: 'Medications:', id: 'medications', type: 'textarea', value: "" },
         { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', value: "" },
+        { label: 'Do you smoke?', id: 'isSmoker', type: 'checkbox', value: "" },
         { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: "" },
     ];
 
@@ -398,6 +397,7 @@ window.editProfile = function (profileId) {
         { label: 'Weight (kg):', id: 'weight', type: 'number', value: profile.weight, helper: "Used to calculate BMI" },
         { label: 'Medications:', id: 'medications', type: 'textarea', value: profile.medications },
         { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', checked: profile.isDiabetic },
+        { label: 'Do you smoke?', id: 'isSmoker', type: 'checkbox', checked: profile.isSmoker },
         { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: profile.healthInfo },
 
     ];
@@ -540,11 +540,12 @@ function saveProfile(event) {
     const weight = document.getElementById("weight").value;
     const medications = document.getElementById("medications").value;
     const isDiabetic = document.getElementById("isDiabetic").checked;
+    const isSmoker = document.getElementById("isSmoker").checked;
     const healthInfo = document.getElementById("healthInfo").value;
     const telephone = document.getElementById("telephone").value;
 
 
-    const profile = { id, fullName, email, birthDate, ethnicity, height, weight, medications, isDiabetic, healthInfo, telephone };
+    const profile = { id, fullName, email, birthDate, ethnicity, height, weight, medications, isDiabetic,isSmoker, healthInfo, telephone };
     localStorage.setItem(id, JSON.stringify(profile));
 
     const profiles = JSON.parse(localStorage.getItem("profiles")) || [];

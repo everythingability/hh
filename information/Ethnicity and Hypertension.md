@@ -3,7 +3,7 @@
 <div id="msg"></div>
 
 <script>
-var appsEthnicities =[
+var allEthnicities =[
     "Afro-Latino",
     "African-Caribbean",
     "Black African",
@@ -26,9 +26,9 @@ if (ethnicity == "White/Caucasian"){
 
 }else {
 	
-  str = "You are " + ethnicity 
+  str = "You are " + ethnicity +`. Many different ethnicities respond differently
+  to the different medicines used to treat hypertension. `
 	
-
 }
 
 msg.innerHTML = str

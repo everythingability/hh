@@ -39,36 +39,43 @@
 
           <div class="form-group align-bottom" id="profileSelectDiv" >
             <select class="custom-select align-bottom font-weight-bold" id="profileSelect" 
-            style="width:340px; font-size: 1.4em; padding-top:1px;padding-bottom:1px;">
+            style="width:340px; font-size: 1.4em; padding-top:1px;padding-bottom:4px;height:45px;">
               <!-- Options will be dynamically added here -->
             </select>
           </div>
 
   
-          <button class="btn btn-primary align-text-bottom " id="editProfileButton">Edit Profile</button> &nbsp;
-          <button id="createProfileBtn" class="btn btn-secondary  align-text-bottom " data-toggle="tooltip" data-placement="top" title="Create new profile for someone new" style="margin-right:4px;"> +</button>       
+          <button class="btn btn-primary align-text-bottom " id="editProfileButton">Edit Profile  <img src="images/fingerprint_white.svg" width="28px"></button> &nbsp;
+
+          <button id="createProfileBtn" class="btn btn-secondary  align-text-bottom " data-toggle="tooltip" data-placement="top" title="Create new profile for someone new" style="margin-right:4px;height:43px;"> +</button>       
 
       </div>
     </nav>
 
+    <!--- ///////////////////////// PERSONAL DETAILS /////////////////////////////// -->
     <div  id="personalDetails" style="width:100%;background:#e6e9eb!important;">
 
       <ul class="nav justify-content-center nav-fill ">
 
+        
         <li class="nav-item">
-        <b><span  id="name" class="nav-link"></span></a></b> 
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:loadPage('Age and Hypertension.md')"><span  id="age"></span> <br>years old</a>
+          <img src="images/fingerprint.svg">
+          <a class="nav-link" href="javascript:loadPage('Age and Hypertension.md')">
+            <b><span  id="name"></span></b> </span> <br> <span  id="age"> </span> years old
+          </a>
         </li>
         <li class="nav-item">
           
-          <a class="nav-link" href="javascript:loadPage('Diabetes and Hypertension.md')"><b>Is diabetic? </b><br><span id="isDiabetic"></span></a>
+          <a class="nav-link" href="javascript:loadPage('Diabetes and Hypertension.md')">
+            <img src="images/diabetes.svg"><br>
+            <b>Is diabetic? </b><br><span id="isDiabetic"></span></a>
         </li>
         <li class="nav-item">
+          <img src="images/blood_pressure.svg">
           <a class="nav-link " href="javascript:loadPage('Diagnosing hypertension.md')" tabindex="-1" ><b>Avg bp</b><br> <span id="averageBloodPressure"></a>
         </li>
         <li class="nav-item">
+          <img src="images/weight.svg" width="32">
           <a class="nav-link" href="javascript:loadPage('Weight and Hypertension.md')">
           <b>BMI</b> 
           <span id="bmi"></span>
@@ -76,13 +83,14 @@
           <span  id="weightDisplay"></span>kg (<i><span  id="category"></span></i>)</a>
         </li>
         <li class="nav-item">
+          <img src="images/ethnicity.svg">
           <a class="nav-link " href="javascript:loadPage('Ethnicity and Hypertension.md')" tabindex="-1" ><b>Ethnicity</b><br><span id="ethnicity"></span></a></li>
 
       </ul>
 
 
     </div>
-  
+     <!--- ///////////////////////// END PERSONAL DETAILS /////////////////////////////// -->
     <main>
 
 
@@ -107,7 +115,7 @@
     <!-- Blood Pressure Diary Form -->
     <br>
     <form id="bpForm" style="display: none;margin-top:10px;width:90%;" class="justify-content-center">
-      <h2 class="mb-2">Add A Blood Pressure Reading</h2>
+      <h2 class="mb-2"><img src="images/blood_pressure.svg"> Add A Blood Pressure Reading</h2>
 
       <div class="row p-2" >
           <div class="col ">
@@ -177,7 +185,7 @@
     <!-- Blood Pressure Entries Table -->
     <div id="entriesTable" style="display: none;margin-top:40px;">
 
-      <h2>Blood Pressure Readings</h2>
+      <h2> <img src="images/cardiogram.svg"> Blood Pressure Readings</h2>
       <span id="average"> </span>
 
       <div class="table-responsive d-flex justify-content-center">
