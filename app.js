@@ -1,6 +1,9 @@
 var x = 100 //just for demo purposes
 var id, bmi, name, category, isDiabetic, weight, height, systolic, diastolic
 var averageSystolic, averageDiastolic, age, ethnicity, averageMsg
+var bloodPressureStatus = ''
+
+//Information related
 var homepage = 'Home.md' //where you want to start Information pages from
 
 if ('serviceWorker' in navigator) {
@@ -104,14 +107,14 @@ function loadProfileData(profileId) {
         
         let editProfileBtn = document.getElementById('editProfileButton');
         editProfileBtn.setAttribute('onclick', `editProfile('${profileId}'); `);
+        editProfileBtn.setAttribute('display', 'block')
 
         //Select the relevant dropdown
         let element = document.getElementById('profileSelect');
         console.log(`profileId: ${profileId}`)
         element.value = profileId;
 
-        bpForm.style.display = "block"; //show the blood pressure form
-        entriesTable.style.display = "block";//show the entries table
+       
 
         //downloadCSVBtn.style.display = "block";
         displayEntries(profileId);
@@ -122,6 +125,7 @@ function loadProfileData(profileId) {
         }else{
             isDiabetic = "Yes"
         }
+        weight = profile.weight
         bmi = profile.weight / ((profile.height / 100) ** 2);
         bmi = bmi.toFixed(2)
         category = ''
@@ -137,6 +141,41 @@ function loadProfileData(profileId) {
         entry = getLastEntry(profileId)
         age = calculateAge(profile.birthDate)
 
+       
+        /*
+        //BLOOD PRESSURE RANKINGS
+
+IN CLINIC
+        // > 180/120 mmHg -> Assess for target organ damage as soon as possible:
+                Consider starting drug treatment immediately without ABPM/HBPM if
+                target organ damage
+                • Repeat clinic BP in 7days if no target organ damage
+
+                Refer for same-day specialist review if:
+                    • retinal haemorrhage or papilloedema
+                    (accelerated hypertension) or
+                    • life-threatening symptoms or
+                    • suspected pheochromocytoma
+
+        // 140/90 to 179/119 -> Offer ABPM (or HBPM if ABPM is declined or not tolerated),Investigate for target organ damage,Assess cardiovascular risk
+
+        // > 140/90 high
+
+        // < 135/85 medium --> check every five years
+
+NOT IN CLINIC
+        // > 150/95 mmHg or more
+
+        // 135/85 to 149/94 mmHg (Stage 1)
+
+        // Under 135/85 mmHg
+
+
+        */
+    
+    
+        ethnicity = profile.ethnicity
+
         document.getElementById("name").innerHTML = profile.fullName
         document.getElementById("bmi").innerHTML = bmi
         document.getElementById("weight").innerHTML = profile.weight
@@ -144,13 +183,21 @@ function loadProfileData(profileId) {
         document.getElementById("category").innerHTML = category
         document.getElementById("age").innerHTML = age
         document.getElementById("isDiabetic").innerHTML = isDiabetic
-        document.getElementById("ethnicity").innerHTML = profile.ethnicity
-        document.getElementById("averageBloodPressure").innerHTML = averageSystolic+"/"+averageDiastolic
+        document.getElementById("ethnicity").innerHTML = ethnicity
+        document.getElementById("averageBloodPressure").innerHTML = averageSystolic+"/"+averageDiastolic + "<br>" + bloodPressureStatus 
 
+        //show releveant sections of the screen
+        bpForm.style.display = "block"; //show the blood pressure form
+        entriesTable.style.display = "block";//show the entries table
+        personalDetails.style.display = "block"
+        hhNav.style.display = "block"
+        informationNav.style.display = "block"
+        editProfileButton.style.display = "block"
+        content.style.display = "block"
 
         //Set the cookie so when you return you return to the same profile if you pop into the information
         document.cookie = "profileId=" + profile.id;
-        document.getElementById("weight").value = profile.weight ; // in the form to the last weight entered
+        
     }
 }
 /////////////////////////////// LOAD A PROFILE /////////////////////////////////
@@ -160,6 +207,7 @@ function showProfileForm(){
     hhNav.style.display = "none"
     informationNav.style.display = "none"
     editProfileButton.style.display = "none"
+    personalDetails.style.display = "none"
 
     profileForm.style.display = "block";
     bpForm.style.display = "none";
@@ -315,6 +363,9 @@ window.editProfile = function (profileId) {
     hhNav.style.display = "none"
     informationNav.style.display = "none"
     editProfileButton.style.display = "none"
+    content.style.display = "none"
+    personalDetails.style.display = "none"
+
 
     const profile = JSON.parse(localStorage.getItem(profileId));
     profileForm.innerHTML = "<h2>Edit Profile</h2>";
@@ -472,6 +523,8 @@ function saveProfile(event) {
     hhNav.style.display = "block"
     informationNav.style.display = "block"
     editProfileButton.style.display = "block"
+    personalDetails.style.display = "block"
+    content.style.display = "block"
 
     event.preventDefault();
     const id = document.getElementById("id").value;
@@ -553,7 +606,21 @@ function displayEntries(profileId) {
         averageDiastolic = Math.round( diastolicSum/count)
         console.log("Average:", averageSystolic, "/", averageDiastolic)
         averageMsg = averageSystolic + "/" + averageDiastolic
-        //document.getElementById("average").innerHTML = "Your average reading is: " +  averageMsg
+
+        if (averageSystolic >=150 & averageDiastolic >= 95){
+            // HIGH
+            bloodPressureStatus = "High"
+        }else if (averageSystolic >=135 & averageDiastolic >= 85){
+            //MEDIUM
+            bloodPressureStatus = "Medium"
+        }else if (averageSystolic <135 & averageDiastolic < 85){
+            bloodPressureStatus = "Low"
+
+        }
+        console.log("averageMsg:", averageMsg)
+        console.log(`averageSystolic:`, averageSystolic , "/", "averageDiastolic", averageDiastolic)
+        console.log(`bloodPressureStatus: ${bloodPressureStatus}`)
+        document.getElementById("average").innerHTML = "Your average reading is: " +  averageMsg
    }
 
 
@@ -658,6 +725,7 @@ window.onhashchange = function() { //When someone clicks the back/forward button
 //handles links like this <a href="javascript:loadPage('MyMarkdownFile.md')">
 function loadPage(markdownFileName) {
     hideHH()
+    $.ajaxSetup({ cache: false });
     console.log("loadPage:", markdownFileName)
     $.get("information/" + markdownFileName, function (data) {
         html = myParse(data, markdownFileName)
