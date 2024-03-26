@@ -16,6 +16,13 @@
   <script src="libs/bootstrap.bundle.min.js"  ></script>
   <script src="libs/marked.min.js"></script>
 
+  <!-- Load c3.css -->
+<link href="libs/c3.css" rel="stylesheet">
+
+<!-- Load d3.js and c3.js -->
+<script src="libs/d3.js" charset="utf-8"></script>
+<script src="libs/c3.js"></script>
+
   <!-- CSS -->
   <link rel="stylesheet" href="libs/bootstrap.min.css">
   <link rel="stylesheet" href="styles.css">
@@ -61,32 +68,35 @@
 
         
         <li class="nav-item">
-          <img src="images/fingerprint.svg">
-          <a class="nav-link" href="javascript:loadPage('Age and Hypertension.md')">
+          <a class="nav-link" href="javascript:loadPage('Age and Hypertension.md')" tabindex="-1" >
+            <img src="images/fingerprint.svg"><br>
             <b><span  id="name"></span></b> </span> <br> <span  id="age"> </span> years old
           </a>
         </li>
-        <li class="nav-item">
-          
-          <a class="nav-link" href="javascript:loadPage('Diabetes and Hypertension.md')">
+
+        <li class="nav-item">   
+          <a class="nav-link" href="javascript:loadPage('Diabetes and Hypertension.md')" tabindex="-1" >
             <img src="images/diabetes.svg"><br>
             <b>Is diabetic? </b><br><span id="isDiabetic"></span></a>
         </li>
+
         <li class="nav-item">
-          <img src="images/blood_pressure.svg">
-          <a class="nav-link " href="javascript:loadPage('Diagnosing hypertension.md')" tabindex="-1" ><b>Avg bp</b><br> <span id="averageBloodPressure"></a>
+          <a class="nav-link " href="javascript:loadPage('Diagnosing hypertension.md')" tabindex="-1" >
+          <img src="images/blood_pressure.svg"><br>
+          <b>Avg bp</b><br> <span id="averageBloodPressure"></a>
         </li>
+
         <li class="nav-item">
-          <img src="images/weight.svg" width="32">
-          <a class="nav-link" href="javascript:loadPage('Weight and Hypertension.md')">
-          <b>BMI</b> 
-          <span id="bmi"></span>
-          <br>
-          <span  id="weightDisplay"></span>kg (<i><span  id="category"></span></i>)</a>
+          <a class="nav-link" href="javascript:loadPage('Weight and Hypertension.md')" tabindex="-1" >
+          <img src="images/weight.svg"> <br>
+          <b> BMI</b> <span id="bmi"></span> <br><span  id="weightDisplay"></span>kg - <i><span  id="category"></span></i></a>
         </li>
+
         <li class="nav-item">
-          <img src="images/ethnicity.svg">
-          <a class="nav-link " href="javascript:loadPage('Ethnicity and Hypertension.md')" tabindex="-1" ><b>Ethnicity</b><br><span id="ethnicity"></span></a></li>
+          <a class="nav-link " href="javascript:loadPage('Ethnicity and Hypertension.md')" tabindex="-1" >
+          <img src="images/ethnicity.svg"><br>
+           <b>Ethnicity</b><br><span id="ethnicity"></span></a>
+        </li>
 
       </ul>
 
@@ -216,11 +226,15 @@
           <!-- Blood pressure entries will be dynamically added here -->
         </tbody>
       </table>
-
+      
     </div>
     <!-- END Blood Pressure Entries Table -->
+    <div id="chart"></div>
+  
 
   </div><!-- end Entries Div-->
+
+
 
 
   
@@ -246,6 +260,8 @@
 
 
 <script src="app.js"></script>
+
+
 
 
 </body>

@@ -132,4 +132,21 @@ main{
   font-size: .8em;
   margin-bottom:40px;
 }
+.nav-item{
+  display: flex;
+  align-items: flex-end;
+}
+.nav-item a{
+  font-size:0.9em;
+  margin-left:50px;
+  border-radius: 25px;
+  /*background-color: aquamarine;*/
+  vertical-align: middle;
+  justify-content: center;
+
+}
+
+#chart{
+  max-width: 80%;
+}
 

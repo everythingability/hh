@@ -1,4 +1,5 @@
 var x = 100 //just for demo purposes
+
 var id, bmi, name, category, isDiabetic, isSmoker, weight, height, systolic, diastolic
 var averageSystolic, averageDiastolic, age, ethnicity, averageMsg
 var bloodPressureStatus = ''
@@ -14,16 +15,40 @@ if ('serviceWorker' in navigator) {
         });
 };
 
-var storageSize = Math.round(JSON.stringify(localStorage).length / 1024);
-console.log("storage: " + storageSize)
+// Calculate localStorage used
+var remainingSpace = 5.0 * 1024 //5MB
+let localStorageSize = function () {
+    let _lsTotal = 0, _xLen, _x;
+    for (_x in localStorage) {
+        if (!localStorage.hasOwnProperty(_x)) continue;
+        _xLen = (localStorage[_x].length + _x.length) * 2;
+        _lsTotal += _xLen;
+    }
+    return (_lsTotal / 1024).toFixed(2);
+}
+console.log(`usedSpace: ${localStorageSize()}kb`)
+remainingSpace = ((remainingSpace - localStorageSize()) / 1024).toFixed(2)
+console.log(`remainingSpace: ${remainingSpace} MB`)
 
+if (remainingSpace < 0.5) {    // Request Quota (only for File System API)
+    //From: https://developer.chrome.com/docs/apps/offline_storage#asking_more
+    var requestedBytes = 1024 * 1024 * 10; // 10MB
+
+    navigator.webkitPersistentStorage.requestQuota(
+        requestedBytes, function (grantedBytes) {
+            window.requestFileSystem(PERSISTENT, grantedBytes, onInitFs, errorHandler);
+
+        }, function (e) { alert('LocalStorage Space Error', e); }
+    );
+}
+// End Calculate localStorage used
 
 //Use this function to retrieve cookies by their names
 function getCookie(name) {
     var re = new RegExp(name + "=([^;]+)");
     var value = re.exec(document.cookie);
     console.log(`cookie: ${value}`)
-    return (value != null) ? unescape(value[1]) : null;
+    return (value != null) ? decodeURIComponent(value[1]) : null;
 }
 
 
@@ -36,14 +61,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Load profiles and profile data on page load
     loadAllProfiles();
     profileSelect.addEventListener("change", function () {
-        loadProfileData(this.value);
+        loadProfile(this.value);
+
+        
     });
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-      })
+    })
 
 });
+
+
 
 ////////////////////////////////////// END ON LOAD //////////////////////////////////////////////
 
@@ -76,11 +105,11 @@ function loadAllProfiles() {
         // if cookie is null show create profile
         console.log(`Selected profileId is: ${profileId}`)
         if (profileId) {
-            loadProfileData(profileId); // Load profile data for the selected profile
+            loadProfile(profileId); // Load profile data for the selected profile
 
         } else {
             document.cookie = "profileId=" + profileSelect.value;
-            loadProfileData(profileId); // Load profile data for the selected profile
+            loadProfile(profileId); // Load profile data for the selected profile
         }
 
         /// END COOKIE
@@ -97,14 +126,14 @@ function loadAllProfiles() {
 
 
 /////////////////////////////// LOAD A PROFILE /////////////////////////////////
-function loadProfileData(profileId) {
+function loadProfile(profileId) {
     const profile = JSON.parse(localStorage.getItem(profileId));
     console.log(profile)
 
     if (profile) {
         profileForm.innerHTML = ``;
         profileForm.style.display = "none"; // Ensure profile form is not displayed
-        
+
         let editProfileBtn = document.getElementById('editProfileButton');
         editProfileBtn.setAttribute('onclick', `editProfile('${profileId}'); `);
         editProfileBtn.setAttribute('display', 'block')
@@ -112,34 +141,32 @@ function loadProfileData(profileId) {
         //Select the relevant dropdown
         let element = document.getElementById('profileSelect');
         console.log(`profileId: ${profileId}`)
-        element.value = profileId;   
+        element.value = profileId;
 
         //downloadCSVBtn.style.display = "block";
         displayEntries(profileId);
 
         //Calculate personal details
-        if (profile.isDiabetic == false){
+        if (profile.isDiabetic == false) {
             isDiabetic = "No"
-        }else{
+        } else {
             isDiabetic = "Yes"
         }
         weight = profile.weight
         bmi = profile.weight / ((profile.height / 100) ** 2);
-        bmi = bmi.toFixed(2)
+        bmi = Math.round(bmi)
         category = ''
-        if (bmi < 18.5) {
+        if (bmi <= 18.5) {
             category = "Underweight";
-        } else if (bmi < 25) {
-            category = "Normal weight";
-        } else if (bmi < 30) {
+        } else if (bmi <= 25) {
             category = "Overweight";
-        } else {
+        } else if (bmi <= 30) {
             category = "Obese";
         }
         entry = getLastEntry(profileId)
         age = calculateAge(profile.birthDate)
 
-       
+
         /*
         //BLOOD PRESSURE RANKINGS
 
@@ -170,19 +197,20 @@ NOT IN CLINIC
 
 
         */
-    
-    
+
+
         ethnicity = profile.ethnicity
 
         document.getElementById("name").innerHTML = profile.fullName
         document.getElementById("bmi").innerHTML = bmi
         document.getElementById("weight").innerHTML = profile.weight
         document.getElementById("weightDisplay").innerHTML = profile.weight//in the header
+        document.getElementById("weight").value = profile.weight//in the bpForm
         document.getElementById("category").innerHTML = category
         document.getElementById("age").innerHTML = age
         document.getElementById("isDiabetic").innerHTML = isDiabetic
         document.getElementById("ethnicity").innerHTML = ethnicity
-        document.getElementById("averageBloodPressure").innerHTML = averageSystolic+"/"+averageDiastolic + "(" + bloodPressureStatus + ")"
+        document.getElementById("averageBloodPressure").innerHTML = averageSystolic + "/" + averageDiastolic + "(" + bloodPressureStatus + ")"
 
         //show releveant sections of the screen
         bpForm.style.display = "block"; //show the blood pressure form
@@ -194,14 +222,47 @@ NOT IN CLINIC
         content.style.display = "block"
 
         //Set the cookie so when you return you return to the same profile if you pop into the information
-        document.cookie = "profileId=" + profile.id;
-        
+        document.cookie = "profileId=" + profileId;
+        try{
+            loadProfileChart(profileId)
+        }catch(e){
+            console.log(e , " error with loadProfileChart", profileId)
+        }
     }
 }
 /////////////////////////////// LOAD A PROFILE /////////////////////////////////
 
+function loadProfileChart(id){
+        //do chart
+
+        var data =  getDataForChart(id)
+        console.log(data)
+         
+         var chart = c3.generate({
+            bindto: '#chart',
+           data: {
+               x: 'x',
+               xFormat: '%Y%m%d', 
+               columns: [
+                    data['dates'],       
+                    data['systolics'],
+                    data['diastolics']
+               ]
+           },
+           axis: {
+               x: {
+                   type: 'timeseries',
+                   tick: {
+                       format: '%Y-%m-%d'
+                   }
+               }
+           }
+         });
+    
+  
+}
 //////////////////////////////// CREATE NEW EMPTY PROFILE FORM EVENT ////////////////////////////////
-function showProfileForm(){
+function showProfileForm() {
     hhNav.style.display = "none"
     informationNav.style.display = "none"
     editProfileButton.style.display = "none"
@@ -215,109 +276,108 @@ function showProfileForm(){
     profileForm.innerHTML = '<h2><img src="images/fingerprint.svg">Create New Profile</h2>';
     profileForm.innerHTML += `
     <p>
-    All profile data is stored in this browser only. None is shared anywhere. All the information
-    is asked to help tailor the information to you.
+    All profile data is stored in this browser and this browser only. No information is shared anywhere. All the information for is to help tailor the information to you personally.
     </p>
     <p>
-    When you have added some blood pressure readings, you can download them to send to your doctor.
+    When you have added some blood pressure readings, you can download them, as a CSV file to send to your doctor via email etc.
     </p>
     
     `;
 
     //Build Ethnicities Dropdown select
     var ethnicitiesDropdown = ''
-    ethnicities.forEach( function(ethnicity){
-        ethnicitiesDropdown += `<option name="${ethnicity}" value="${ethnicity}" >${ethnicity}</option>`  
+    ethnicities.forEach(function (ethnicity) {
+        ethnicitiesDropdown += `<option name="${ethnicity}" value="${ethnicity}" >${ethnicity}</option>`
     });
     console.log(ethnicitiesDropdown)
     //End Ethnicities Dropdown
 
     const profileFields = [
         { label: '', id: 'id', type: 'hidden', value: generateUniqueId() },
-        { label: 'Full Name:', id: 'fullName', type: 'text', value: "" , helper:""},
-        { label: 'Email:', id: 'email', type: 'email', value: "" , helper:"This isn't shared with anyone"},
-        { label: 'Telephone:', id: 'telephone', type: 'tel', value: "" , helper:""},
-        { label: 'Birth Date:', id: 'birthDate', type: 'date', value: "" , helper:""},
-        { label: 'Ethnicity:', id: 'ethnicity', type: 'select', value: ethnicitiesDropdown , helper:""},
-        { label: 'Height (cm):', id: 'height', type: 'number', value: "", helper:"" },
-        { label: 'Weight (kg):', id: 'weight', type: 'number', value: "", helper:"" },
-        { label: 'Medications:', id: 'medications', type: 'textarea', value: "", helper:"" },
-        { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', value: "", helper:"" },
-        { label: 'Do you smoke?', id: 'isSmoker', type: 'checkbox', value: "" , helper:""},
-        { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: "", helper:"" },
+        { label: 'Full Name:', id: 'fullName', type: 'text', value: "", helper: "" },
+        { label: 'Email:', id: 'email', type: 'email', value: "", helper: "This isn't shared with anyone" },
+        { label: 'Telephone:', id: 'telephone', type: 'tel', value: "", helper: "" },
+        { label: 'Birth Date:', id: 'birthDate', type: 'date', value: "", helper: "" },
+        { label: 'Ethnicity:', id: 'ethnicity', type: 'select', value: ethnicitiesDropdown, helper: "" },
+        { label: 'Height (cm):', id: 'height', type: 'number', value: "", helper: "" },
+        { label: 'Weight (kg):', id: 'weight', type: 'number', value: "", helper: "" },
+        { label: 'Medications:', id: 'medications', type: 'textarea', value: "", helper: "" },
+        { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', value: "", helper: "" },
+        { label: 'Do you smoke?', id: 'isSmoker', type: 'checkbox', value: "", helper: "" },
+        { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: "", helper: "" },
     ];
 
     // Build Create Profile Form...
 
-        profileFields.forEach(field => {
+    profileFields.forEach(field => {
 
-            // create the input
-                /*const inputField = field.type === 'textarea' ?
-                 `<textarea class="form-control" id="${field.id}">${field.value}</textarea>` :
-                `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`;*/
-    
-            var inputField = ''
-            switch(field.type) {
-    
-                case "hidden":
-                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}><div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
-    
-                case "text":
-                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+        // create the input
+        /*const inputField = field.type === 'textarea' ?
+         `<textarea class="form-control" id="${field.id}">${field.value}</textarea>` :
+        `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`;*/
+
+        var inputField = ''
+        switch (field.type) {
+
+            case "hidden":
+                inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}><div class="form-helper helper">${field.helper || ""}</div>`
+
+                break;
+
+            case "text":
+                inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
                     <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
-    
-                case "checkbox":
-                    inputField += `<input type="${field.type}" class="form-control d-inline-flex w-25" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+
+                break;
+
+            case "checkbox":
+                inputField += `<input type="${field.type}" class="form-control d-inline-flex w-25" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
                     <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
-    
-                case "textarea":
-                    inputField += `<textarea rows="10" class="form-control" id="${field.id}">${field.value}</textarea>
+
+                break;
+
+            case "textarea":
+                inputField += `<textarea rows="10" class="form-control" id="${field.id}">${field.value}</textarea>
                     <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
-    
-                case "number":
-                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+
+                break;
+
+            case "number":
+                inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
                     <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
-    
-                case "email":
-                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+
+                break;
+
+            case "email":
+                inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
                     <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
-    
-                case "date":
-                        inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+
+                break;
+
+            case "date":
+                inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
                         <div class="form-helper helper">${field.helper || ""}</div>`
-        
-                        break;
-    
-                case "tel":
-                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" >
-                    <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
 
-                case "select":
-                    inputField += `<select class="form-control" id="${field.id}" >${field.value}</select>
-                    <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
+                break;
 
-    
-                default:
-                    
-                    inputField += `<input type="text" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`
-                    
-                }     
+            case "tel":
+                inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" >
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+
+                break;
+
+            case "select":
+                inputField += `<select class="form-control" id="${field.id}" >${field.value}</select>
+                    <div class="form-helper helper">${field.helper || ""}</div>`
+
+                break;
+
+
+            default:
+
+                inputField += `<input type="text" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`
+
+        }
 
         const formGroup = document.createElement("div");
         formGroup.classList.add("form-group");
@@ -350,7 +410,7 @@ createProfileBtn.addEventListener("click", function () {
 
 
 //////////////////////////////// END CREATE NEW PROFILE FORM EVENT ////////////////////////////////
-var ethnicities =[
+var ethnicities = [
     "Afro-Latino",
     "African-Caribbean",
     "Black African",
@@ -383,10 +443,10 @@ window.editProfile = function (profileId) {
 
     //Build Ethnicities Dropdown select
     var ethnicitiesDropdown = ''
-    ethnicities.forEach( function(ethnicity){
-        console.log( profile.ethnicity, ethnicity)
-        var selected= ''
-        if (profile.ethnicity == ethnicity){
+    ethnicities.forEach(function (ethnicity) {
+        console.log(profile.ethnicity, ethnicity)
+        var selected = ''
+        if (profile.ethnicity == ethnicity) {
             selected = ' selected '
         }
         ethnicitiesDropdown += `<option name="${ethnicity}" value="${ethnicity}" ${selected}>${ethnicity}</option>`
@@ -400,21 +460,22 @@ window.editProfile = function (profileId) {
         { label: 'Full Name:', id: 'fullName', type: 'text', value: profile.fullName },
         { label: 'Email:', id: 'email', type: 'email', value: profile.email, helper: "This isn't shared ever, but is included in your spreadsheet data that you can download." },
         { label: 'Telephone:', id: 'telephone', type: 'tel', value: profile.telephone, helper: "This isn't shared ever, but is included in your spreadsheet data that you can download." },
-        { label: 'Birth Date:', id: 'birthDate', type: 'date', value: profile.birthDate,helper: "This is used to calculate your BMI and used to help make the Information section more useful" },
-        { label: 'Ethnicity:', id: 'ethnicity', type: 'select', value: ethnicitiesDropdown, helper: "This is used to tailor the Information section too" },
-        { label: 'Height (cm):', id: 'height', type: 'number', value: profile.height, helper: "Used to calculate BMI" },
+        { label: 'Birth Date:', id: 'birthDate', type: 'date', value: profile.birthDate, helper: `This is used to calculate your BMI and used to help make the Information section more relevant to you personally` },
+        { label: 'Ethnicity:', id: 'ethnicityDropdown', type: 'select', value: ethnicitiesDropdown, helper: "This is used to tailor the Information section too" },
+        { label: 'Height (cm):', id: 'height', type: 'number', value: profile.height, helper: "Used to calculate Body Mass Index (BMI)" },
         { label: 'Weight (kg):', id: 'weight', type: 'number', value: profile.weight, helper: "Used to calculate BMI" },
-        { label: 'Medications:', id: 'medications', type: 'textarea', value: profile.medications },
+        { label: 'Medications:', id: 'medications', type: 'textarea', value: profile.medications, helper:`For example, <br>
+        Lisinopril 10mg twice a day`},
         { label: 'Do you have type 2 diabetes?', id: 'isDiabetic', type: 'checkbox', checked: profile.isDiabetic },
         { label: 'Do you smoke?', id: 'isSmoker', type: 'checkbox', checked: profile.isSmoker },
-        { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: profile.healthInfo },
+        { label: 'About Your Health:', id: 'healthInfo', type: 'textarea', value: profile.healthInfo , helper:"Any information a doctor may find relevant."},
 
     ];
 
     profileFields.forEach(field => {
 
         var inputField = ''
-        switch(field.type) {
+        switch (field.type) {
 
             case "hidden":
                 inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}><div class="form-helper helper">${field.helper || ""}</div>`
@@ -452,10 +513,10 @@ window.editProfile = function (profileId) {
                 break;
 
             case "date":
-                    inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
+                inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>
                     <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
+
+                break;
 
             case "tel":
                 inputField += `<input type="${field.type}" class="form-control" id="${field.id}" value="${field.value}" >
@@ -464,16 +525,16 @@ window.editProfile = function (profileId) {
                 break;
 
             case "select":
-                    inputField += `<select class="form-control" id="${field.id}" >${field.value}</select>
+                inputField += `<select class="form-control" id="${field.id}" >${field.value}</select>
                     <div class="form-helper helper">${field.helper || ""}</div>`
-    
-                    break;
+
+                break;
 
             default:
-                
+
                 inputField += `<input type="text" class="form-control" id="${field.id}" value="${field.value}" ${field.disabled ? 'disabled' : ''} ${field.checked ? 'checked' : ''}>`
-                
-            }     
+
+        }
 
         //create a formGroup
         const formGroup = document.createElement("div");
@@ -504,22 +565,22 @@ window.editProfile = function (profileId) {
 
     hideHH()
 
-    
+
 }
 
-function hideBPForm(){
+function hideBPForm() {
     console.log('hiding blood pressure form')
     const bpForm = document.getElementById("bpForm");
     bpForm.style.display = "none";
 }
 
-function hideEntries(){
+function hideEntries() {
     console.log('hiding blood pressure entries table')
     const entriesTable = document.getElementById("entriesTable");
     entriesTable.style.display = "none";
 }
 
-function hideHH(){ 
+function hideHH() {
     hideBPForm()
     hideEntries()
 }
@@ -541,7 +602,7 @@ function saveProfile(event) {
     const email = document.getElementById("email").value;
     const birthDate = document.getElementById("birthDate").value;
 
-    const ethnicityElement = document.getElementById("ethnicity");
+    const ethnicityElement = document.getElementById("ethnicityDropdown");
     var ethnicity = ethnicityElement.options[ethnicityElement.selectedIndex].text;
     console.log(`ethnicity: ${ethnicity}`)
 
@@ -554,7 +615,7 @@ function saveProfile(event) {
     const telephone = document.getElementById("telephone").value;
 
 
-    const profile = { id, fullName, email, birthDate, ethnicity, height, weight, medications, isDiabetic,isSmoker, healthInfo, telephone };
+    const profile = { id, fullName, email, birthDate, ethnicity, height, weight, medications, isDiabetic, isSmoker, healthInfo, telephone };
     localStorage.setItem(id, JSON.stringify(profile));
 
     const profiles = JSON.parse(localStorage.getItem("profiles")) || [];
@@ -567,15 +628,34 @@ function saveProfile(event) {
     localStorage.setItem("profiles", JSON.stringify(profiles));
     loadAllProfiles();
     console.log(`id: ${id} for email:${email}`)
-    loadProfileData(id); // Automatically select and load the newly created profile
+    loadProfile(id); // Automatically select and load the newly created profile
     //alert("Profile saved successfully!");
 
-  
+
     document.getElementById("weight").value = profile.weight
 }
 /////////////////////////// END SAVE PROFILE ////////////////////////////////////
 
+function getDataForChart(id){
+    //https://c3js.org/samples/timeseries.html 
+    console.log( "getDataForChart", id)
 
+    var entries = JSON.parse(localStorage.getItem(id + "_entries")) || [];
+    var dateArray = ['x']
+    var sysArray = ['Systolic']
+    var diaArray = ['Diastolic']
+
+    for (i=0;i <entries.length; i++){
+        var timestamps =  entries[i].timestamp.split("/")//fucking dates
+        date = timestamps[2].split(",")[0]+"-" + timestamps[1]+"-" +timestamps[0]
+        dateArray.push( Date.parse(date))
+        sysArray.push(  Number(entries[i].systolic))
+        diaArray.push(  Number(entries[i].diastolic))
+
+    }
+    return {dates: dateArray, systolics: sysArray, diastolics: diaArray}
+
+}
 ///////////////////////////////// DISPLAY ENTRIES IN TABLE /////////////////////////////////
 function displayEntries(profileId) {
     console.log(`displayEntries: ${profileId} `)
@@ -587,18 +667,18 @@ function displayEntries(profileId) {
     var count = 0
     var systolicSum = 0
     var diastolicSum = 0
-    console.log( "num of entries: " , entries.length)
-    if (entries.length > 1){
+    console.log("num of entries: ", entries.length)
+    if (entries.length > 1) {
         entries.forEach(entry => {
             //tidy up the timestamp
             var timestamp = entry.timestamp.replace(",", "<br>")
-            timestamp = timestamp.substring(0, timestamp.length-3);//chop last :34 secs off.
+            timestamp = timestamp.substring(0, timestamp.length - 3);//chop last :34 secs off.
             //tidy up the timestamp
 
             const row = document.createElement("tr");
             systolicSum += Number(entry.systolic)
             diastolicSum += Number(entry.diastolic)
-            count ++
+            count++
 
             row.innerHTML = `
             <td>${timestamp}</td>
@@ -609,29 +689,29 @@ function displayEntries(profileId) {
         `;
             entriesBody.appendChild(row);
         });
-   
+
 
         //Add average to table
-        averageSystolic = Math.round( systolicSum/count)
-        averageDiastolic = Math.round( diastolicSum/count)
+        averageSystolic = Math.round(systolicSum / count)
+        averageDiastolic = Math.round(diastolicSum / count)
         console.log("Average:", averageSystolic, "/", averageDiastolic)
         averageMsg = averageSystolic + "/" + averageDiastolic
 
-        if (averageSystolic >=150 & averageDiastolic >= 95){
+        if (averageSystolic >= 150 & averageDiastolic >= 95) {
             // HIGH
             bloodPressureStatus = "High"
-        }else if (averageSystolic >=135 & averageDiastolic >= 85){
+        } else if (averageSystolic >= 135 & averageDiastolic >= 85) {
             //MEDIUM
             bloodPressureStatus = "Medium"
-        }else if (averageSystolic <135 & averageDiastolic < 85){
+        } else if (averageSystolic < 135 & averageDiastolic < 85) {
             bloodPressureStatus = "Low"
 
         }
         console.log("averageMsg:", averageMsg)
-        console.log(`averageSystolic:`, averageSystolic , "/", "averageDiastolic", averageDiastolic)
+        console.log(`averageSystolic:`, averageSystolic, "/", "averageDiastolic", averageDiastolic)
         console.log(`bloodPressureStatus: ${bloodPressureStatus}`)
-        document.getElementById("average").innerHTML = "Your average reading is: " +  averageMsg
-   }
+        document.getElementById("average").innerHTML = "Your average reading is: " + averageMsg
+    }
 
 
 
@@ -655,7 +735,7 @@ bpForm.addEventListener("submit", function (event) {
     localStorage.setItem(profileId, JSON.stringify(profile));
 
     //create a new diary entry
-    const timestamp = new Date().toLocaleString({dateStyle:"short", timeStyle:"short"});
+    const timestamp = new Date().toLocaleString({ dateStyle: "short", timeStyle: "short" });
     const id = generateUniqueId();
     const entry = { id, systolic, diastolic, weight, timestamp, notes };
     const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
@@ -720,17 +800,17 @@ function generateUniqueId() {
 
 //////////////////////// MARKDOWN INFORMATION PAGES ////////////////////////////
 
-window.onhashchange = function() { //When someone clicks the back/forward buttons.
+window.onhashchange = function () { //When someone clicks the back/forward buttons.
     var hash = window.location.hash.replace("#", "")
-    if ( hash != '' ){
+    if (hash != '') {
         //console.log("hash:", hash)
         loadPage(hash)
-    }else{
+    } else {
         //console.log(window.location)
         loadPage(homepage)
     }
 
-  }   
+}
 
 //handles links like this <a href="javascript:loadPage('MyMarkdownFile.md')">
 function loadPage(markdownFileName) {
@@ -744,7 +824,7 @@ function loadPage(markdownFileName) {
 
     document.title = decodeURIComponent(markdownFileName.replace(".md", ""))//Set the browser's title to the name of the file.
     window.location.hash = `${markdownFileName}`; //append the pages' url with #MyMarkDownFile.md
-    
+
 }
 
 /* Turns markdown links and images into HTML links and images*/
@@ -763,9 +843,9 @@ function fixLinks(markdownContent) {
             var text = match[5];
             var link = match[6];
             /*console.log("Type: Link", text, link);*/
-            if (link.startsWith("http")){
+            if (link.startsWith("http")) {
                 markdownContent = markdownContent.replace(`[${text}](${link})`, `<a href="${link}" target="_blank">${text}</a>`)
-            }else{
+            } else {
                 link = link.replace("../", '') //fix "backup relative links"
                 markdownContent = markdownContent.replace(`[${text}](${link})`, `<a href="javascript:loadPage('${link}')">${text}</a>`)
             }
@@ -778,7 +858,7 @@ function fixLinks(markdownContent) {
 
 function myParse(data) {
     // maybe get any meta data from the page at this point or do some other wizardry?
-    data = fixLinks(data)          
+    data = fixLinks(data)
     var html = marked.parse(data) // Use the marked.js lib to turn markdown into HTML
     return html
 }
@@ -795,19 +875,20 @@ downloadCSVBtn.addEventListener("click", function () {
     const entries = JSON.parse(localStorage.getItem(profileId + "_entries")) || [];
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Profile Information\n";
-    csvContent += "Full Name,Email,Birth Date,Ethnicity,Height (cm),Weight (kg),Medications,Diabetic,About Your Health,Telephone\n";
-    csvContent += `${profile.fullName},${profile.email},${profile.birthDate},${profile.ethnicity},${profile.height},${profile.weight},"${profile.medications}",${profile.isDiabetic ? 'Yes' : 'No'},"${profile.healthInfo}",${profile.telephone || 'Not provided'}\n\n`;
-    csvContent += "Blood Pressure Entries\n";
-    csvContent += "Timestamp,Systolic,Diastolic,Weight (kg)\n";
+
+    csvContent += "Full Name,Email,Birth Date,Ethnicity,Height (cm),Weight (kg),Medications,Diabetic,About Your Health,Telephone, Is Smoker?,Date,Time,Systolic,Diastolic,Weight (kg),Notes\n";
+
+    
     entries.forEach(entry => {
-        csvContent += `${entry.timestamp},${entry.systolic},${entry.diastolic},${entry.weight}\n`;
+        csvContent += `${profile.fullName},${profile.email},${profile.birthDate},${profile.ethnicity},${profile.height},${profile.weight},"${profile.medications}",${profile.isDiabetic ? 'Yes' : 'No'},"${profile.healthInfo}",${profile.telephone || 'Not provided'},${profile.isSmoker ? 'Yes' : 'No'},`
+        csvContent += `${entry.timestamp},${entry.systolic},${entry.diastolic},${entry.weight},${entry.notes}\n`;
     });
 
     const encodedURI = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedURI);
-    link.setAttribute("download", `${profile.fullName}_data.csv`);
+    var dateStr = new Date().toDateString();
+    link.setAttribute("download", `${profile.fullName}_` + dateStr + ".csv");
     document.body.appendChild(link);
     link.click();
 });
