@@ -233,7 +233,7 @@ NOT IN CLINIC
 /////////////////////////////// LOAD A PROFILE /////////////////////////////////
 
 function loadProfileChart(id){
-        //do chart
+        //do chart // https://c3js.org/samples/timeseries.html
 
         var data =  getDataForChart(id)
         console.log(data)
@@ -436,7 +436,9 @@ window.editProfile = function (profileId) {
 
 
     const profile = JSON.parse(localStorage.getItem(profileId));
-    profileForm.innerHTML = `<h2><img src="images/fingerprint.svg" width="38px"> Edit Profile</h2>`;
+    profileForm.innerHTML = `<h2><img src="images/fingerprint.svg" width="38px"> Edit Profile</h2>
+    <button class="btn btn-secondary" onclick="cancelProfile()">Cancel</button>
+    `;
     profileForm.innerHTML += `<!-- Profile form fields will be dynamically generated here -->`;
     console.log('editProfle: ' + profile.id)
     if (profile.id == "") profile.id = generateUniqueId()
@@ -710,7 +712,7 @@ function displayEntries(profileId) {
         console.log("averageMsg:", averageMsg)
         console.log(`averageSystolic:`, averageSystolic, "/", "averageDiastolic", averageDiastolic)
         console.log(`bloodPressureStatus: ${bloodPressureStatus}`)
-        document.getElementById("average").innerHTML = "Your average reading is: " + averageMsg
+        document.getElementById("average").innerHTML = `Your average reading, from ${entries.length} readings is: ${averageMsg}`
     }
 
 

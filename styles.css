@@ -147,6 +147,9 @@ main{
 }
 
 #chart{
-  max-width: 80%;
+  display: flex;  
+  justify-content: center;
+  max-width: 90%;
+  margin: auto;
 }
 
